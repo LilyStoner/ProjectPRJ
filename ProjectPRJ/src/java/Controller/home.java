@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Vehicle;
 
@@ -32,6 +33,8 @@ public class home extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         List<Vehicle> listVehicle = dao.getAllVehicles();
+        HttpSession session = request.getSession();
+        
         request.setAttribute("listVehicle", listVehicle);
         request.getRequestDispatcher("home.jsp").forward(request, response);
     } 

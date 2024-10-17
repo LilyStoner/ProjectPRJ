@@ -71,7 +71,7 @@
                                                                         <span class="image">
                                                                             <img src="<%=listVehicle.get(i).getImage()%>" alt="" />
                                                                         </span>
-                                                                        <a href="offers.html">
+                                                                        <a href="Rental?vehicleId=<%=listVehicle.get(i).getVehicleId()%>">
                                                                             <h2><%=listVehicle.get(i).getBrand()%>-<%=listVehicle.get(i).getModel()%></h2>
                                                                             <h2><%=listVehicle.get(i).getVehicleType()%></h2>
                                                                             <p>price from: <strong> $<%=listVehicle.get(i).getPricePerDay()%> </strong> per weekend</p>

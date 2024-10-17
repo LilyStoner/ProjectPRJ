@@ -45,6 +45,24 @@ public class DAO extends DBContext{
      return list;
     }
     
+    public Vehicle getVehicleById(int id){
+        try {
+            String sql ="select * from Vehicle where vehicle_id="+id;
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            Vehicle v = new Vehicle();
+            while(rs.next()){
+                v = new Vehicle(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6), rs.getInt(7), rs.getString(8), rs.getString(9), rs.getString(10));
+                 return v;
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    
     /**
      *
      * @param customerId

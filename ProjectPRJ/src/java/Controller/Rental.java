@@ -5,21 +5,24 @@
 
 package Controller;
 
+import dal.DAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.Vehicle;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="RentalOrder", urlPatterns={"/order"})
-public class RentalOrder extends HttpServlet {
+@WebServlet(name="Rental", urlPatterns={"/Rental"})
+public class Rental extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -30,20 +33,13 @@ public class RentalOrder extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet RentalOrder</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet RentalOrder at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        DAO dao = new DAO();
+        List<Vehicle> listVehicle = dao.getAllVehicles();
+        HttpSession session = request.getSession();
+        request.setAttribute("listVehicle", listVehicle);
+        request.getRequestDispatcher("rental.jsp").forward(request, response);
         }
-    } 
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
