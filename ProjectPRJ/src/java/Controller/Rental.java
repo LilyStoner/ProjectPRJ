@@ -35,8 +35,10 @@ public class Rental extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         List<Vehicle> listVehicle = dao.getAllVehicles();
+        String vehicle = request.getParameter("vehicleId");
         HttpSession session = request.getSession();
         request.setAttribute("listVehicle", listVehicle);
+        request.setAttribute("vehicle", dao.getVehicleById(Integer.parseInt(vehicle)));
         request.getRequestDispatcher("rental.jsp").forward(request, response);
         }
     

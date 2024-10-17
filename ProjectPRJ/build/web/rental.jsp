@@ -9,7 +9,53 @@
 		<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
+                <style>
+
+                    .vehicle-container {
+                      width: 100%;
+                      padding: 20px;
+                      background-color: #ffffff;
+                      border-radius: 8px;
+                      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                      display: flex;
+                      justify-content: space-around;
+                    }
+
+                    .vehicle-container h2 {
+                      margin-top: 0;
+                      color: #333;
+                    }
+
+                    .vehicle-info {
+                      margin-bottom: 10px;
+                    }
+
+                    .vehicle-info label {
+                      font-weight: bold;
+                      color: #555;
+                      margin: 0 0 0.5rem 0;
+                    }
+
+                    .vehicle-info span {
+                      margin-left: 5px;
+                      color: #777;
+                    }
+
+                    .vehicle-image img {
+                      max-width: 100%;
+                      border-radius: 4px;
+                    }
+                    
+                    .Description {
+                        margin-left: 4rem;
+                        font-size: 2rem;
+                    }
+                    .Description span {
+                        margin-left: 4rem;
+                        font-size: 1.2rem;
+                    }
+                  </style>
+        </head>
 	<body class="is-preload">
 		<!-- Wrapper -->
 			<div id="wrapper">
@@ -25,10 +71,52 @@
 					<div id="main">
 						<div class="inner">
 							<h1>Offers</h1>
+                                                        <div class="vehicle-container">
+                                                            <div>
+                                                                    <h2>Product details:</h2>
 
-							<div class="image main">
-								<img src="images/banner-image-6-1920x500.jpg" class="img-fluid" alt="" />
-							</div>
+                                                            <div class="vehicle-info">
+                                                              <label>Type: </label> <span id="vehicle_type">${vehicle.getVehicleType()}</span>
+                                                            </div>
+                                                            <div class="vehicle-info">
+                                                              <label>Model: </label> <span id="model">${vehicle.getModel()}</span>
+                                                            </div>
+
+                                                            <div class="vehicle-info">
+                                                              <label>Brand: </label> <span id="brand">${vehicle.getBrand()}</span>
+                                                            </div>
+
+                                                            <div class="vehicle-info">
+                                                              <label>Registration Number: </label> <span id="registration_number">${vehicle.getRegistrationNumber()}</span>
+                                                            </div>
+
+                                                            <div class="vehicle-info">
+                                                              <label>Manufacture Year: </label> <span id="manufacture_year">${vehicle.getManufactureYear()}</span>
+                                                            </div>
+
+                                                            <div class="vehicle-info">
+                                                              <label>Price Per Day: </label> <span id="price_per_day">1${vehicle.getPricePerDay()}$</span>
+                                                            </div>
+
+                                                            <div class="vehicle-info">
+                                                              <label>Status: </label> <span id="status">${vehicle.getStatus()}</span>
+                                                            </div>
+
+                                                            </div>
+                                                             
+                                                            <div class="vehicle-image">
+                                                              <img src="${vehicle.getImage()}" alt="Hình ảnh xe">
+                                                              <br>
+                                                              
+                                                              <input type="button" value="Add To Contract" name="Contract" />
+                                                              <input type="button" value="Rent Now" name="Rent" />
+                                                            </div>
+
+                                                          </div>
+                                                             <div class="vehicle-info Description">
+                                                              <label>Description: </label> <span id="description">${vehicle.getDescription()}</span>
+                                                            </div>
+							
 
 							<!-- Offers -->
                                                         <%
@@ -42,7 +130,7 @@
                                                                         <span class="image">
                                                                             <img src="<%=listVehicle.get(i).getImage()%>" alt="" />
                                                                         </span>
-                                                                        <a href="Rental">
+                                                                        <a href="Rental?vehicleId=<%=listVehicle.get(i).getVehicleId()%>">
                                                                             <h2><%=listVehicle.get(i).getBrand()%>-<%=listVehicle.get(i).getModel()%></h2>
                                                                             <h2><%=listVehicle.get(i).getVehicleType()%></h2>
                                                                             <p>price from: <strong> $<%=listVehicle.get(i).getPricePerDay()%> </strong> per weekend</p>
