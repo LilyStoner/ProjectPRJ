@@ -109,7 +109,7 @@
                                                               <br>
                                                               
                                                               <input type="button" value="Add To Contract" name="Contract" />
-                                                              <input type="button" value="Rent Now" name="Rent" />
+                                                              <input type="button" value="Rent Now" name="Rent" onclick="window.location.href='order'" />
                                                             </div>
 
                                                           </div>

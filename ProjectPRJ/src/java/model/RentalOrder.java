@@ -16,19 +16,19 @@ import java.util.Date;
 public class RentalOrder {
 
     private int orderId;
-    private Integer customerId;
+    private int customerId;
     private LocalDate startDate;
     private LocalDate endDate;
-    private BigDecimal totalAmount;
+    private Double totalAmount;
     private String status;
-    private Boolean depositPaid;
-    private LocalDateTimeOv createdAt;
+    private int depositPaid;
+    private String createdAt;
 
     // Constructor
     public RentalOrder() {
     }
 
-    public RentalOrder(int orderId, Integer customerId, LocalDate startDate, LocalDate endDate, BigDecimal totalAmount, String status, Boolean depositPaid, LocalDateTimeOv createdAt) {
+    public RentalOrder(int orderId, int customerId, LocalDate startDate, LocalDate endDate, Double totalAmount, String status, int depositPaid, String createdAt) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.startDate = startDate;
@@ -48,20 +48,20 @@ public class RentalOrder {
         this.orderId = orderId;
     }
 
-    public Integer getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Integer customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
+    public String getTotalAmount() {
+        return String.format("%.2f", totalAmount);
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
+    public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -73,19 +73,19 @@ public class RentalOrder {
         this.status = status;
     }
 
-    public Boolean getDepositPaid() {
+    public int getDepositPaid() {
         return depositPaid;
     }
 
-    public void setDepositPaid(Boolean depositPaid) {
+    public void setDepositPaid(int depositPaid) {
         this.depositPaid = depositPaid;
     }
 
-    public LocalDateTimeOv getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTimeOv createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
