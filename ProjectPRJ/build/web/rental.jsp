@@ -109,7 +109,7 @@
                                                               <br>
                                                               
                                                               <input type="button" value="Add To Contract" name="Contract" />
-                                                              <input type="button" value="Rent Now" name="Rent" onclick="window.location.href='order'" />
+                                                              <input type="button" value="Rent Now" name="Rent" onclick="window.location.href='order?vehicleID=${vehicle.getVehicleId()}'" />
                                                             </div>
 
                                                           </div>

@@ -142,16 +142,77 @@ public class DAO extends DBContext{
         System.out.println("Lỗi khi thêm dữ liệu: " + e.getMessage());
     }
 }
-     public void addOrderVehicle( Integer orderId, Integer vehicleId, LocalDate pickupDate, LocalDate returnDate) {
-        try {
-            String sql = """
-                         INSERT INTO [dbo].[OrderVehicle] (order_id, vehicle_id, pickup_date, return_date)
-                         VALUES ("""+orderId+", "+vehicleId+", '"+pickupDate+"', '"+returnDate+"');";
-            connection.createStatement().execute(sql);
-        } catch (Exception e) {
-        }
-    }
+  
+  public void addOrderVehicle(Integer orderId, Integer vehicleId, LocalDate pickupDate, LocalDate returnDate) {
+    String sql = """
+                 INSERT INTO [dbo].[OrderVehicle] (order_id, vehicle_id, pickup_date, return_date)
+                 VALUES (?, ?, ?, ?);
+                 """;
 
+    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        pstmt.setObject(1, orderId, java.sql.Types.INTEGER);
+        pstmt.setObject(2, vehicleId, java.sql.Types.INTEGER);
+
+        if (pickupDate != null) {
+            pstmt.setDate(3, java.sql.Date.valueOf(pickupDate));
+        } else {
+            pstmt.setNull(3, java.sql.Types.DATE);
+        }
+
+        if (returnDate != null) {
+            pstmt.setDate(4, java.sql.Date.valueOf(returnDate));
+        } else {
+            pstmt.setNull(4, java.sql.Types.DATE);
+        }
+
+        int rowsInserted = pstmt.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Đơn thuê xe đã được thêm thành công.");
+        }
+    } catch (SQLException e) {
+        System.out.println("Lỗi khi thêm đơn thuê xe: " + e.getMessage());
+    }
+}
+
+  public void updateRentalOrder(Integer orderId, LocalDate startDate, LocalDate endDate, String totalAmount, String status, Boolean depositPaid, Integer vehicleID) {
+    String sql = """
+                 UPDATE [dbo].[RentalOrder]
+                 SET start_date = ?, end_date = ?, total_amount = ?, status = ?, deposit_paid = ?, created_at = GETDATE()
+                 WHERE order_id = ?;
+                 """;
+
+    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        if (startDate == null || startDate.equals(LocalDate.MAX)) {
+            pstmt.setNull(1, java.sql.Types.DATE);
+        } else {
+            pstmt.setDate(1, java.sql.Date.valueOf(startDate));
+        }
+
+        if (endDate == null || endDate.equals(LocalDate.MAX)) {
+            pstmt.setNull(2, java.sql.Types.DATE);
+        } else {
+            pstmt.setDate(2, java.sql.Date.valueOf(endDate));
+        }
+
+        pstmt.setBigDecimal(3, new java.math.BigDecimal(totalAmount));
+        pstmt.setString(4, status);
+        pstmt.setBoolean(5, depositPaid != null && depositPaid);
+        
+        pstmt.setInt(6, orderId);
+
+        int rowsUpdated = pstmt.executeUpdate();
+        if (rowsUpdated > 0) {
+            System.out.println("Dữ liệu đã được cập nhật thành công.");
+        } else {
+            System.out.println("Không tìm thấy bản ghi để cập nhật.");
+        }
+    } catch (SQLException e) {
+        System.out.println("Lỗi khi cập nhật dữ liệu: " + e.getMessage());
+    }
+      addOrderVehicle(orderId, vehicleID, startDate, endDate);
+}
+
+ 
     
     public static void main(String[] args) {
        

@@ -9,23 +9,20 @@ import dal.DAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import model.RentalOrder;
-import model.Vehicle;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="Order", urlPatterns={"/order"})
-public class Order extends HttpServlet {
+@WebServlet(name="OrderComplete", urlPatterns={"/OrderComplete"})
+public class OrderComplete extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,18 +35,21 @@ public class Order extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
-        Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
-       // Integer.valueOf(session.getAttribute("userID").toString())
-        dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE);
-        session.setAttribute("lou", dao.getLastOrderOfUserID(1));
-        request.setAttribute("vehicle", v);
-        request.getRequestDispatcher("order.jsp").forward(request, response);
+        RentalOrder ro = (RentalOrder) session.getAttribute("lou");
+        int vehicleID=Integer.parseInt(request.getParameter("vehicleID"));
+        LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
+        LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
+        String totalAmount =  request.getParameter("total_amount");
+        totalAmount=totalAmount.substring(0, totalAmount.length()-2);
+        dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, vehicleID);
+        request.setAttribute("vehicleID", vehicleID);
+        request.setAttribute("pickup_date", pickupDate);
+        request.setAttribute("vehicle", dao.getVehicleById(vehicleID));
+        request.setAttribute("return_date", returnDate);
+        request.setAttribute("total_amount",totalAmount);
+        request.getRequestDispatcher("order_complete.jsp").forward(request, response);
     } 
-    public static void main(String[] args) {
-                DAO dao = new DAO();
-                dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE);
-                System.out.println(dao.getLastOrderOfUserID(1));
-    }
+   
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
