@@ -108,7 +108,7 @@
                                                               <img src="${vehicle.getImage()}" alt="Hình ảnh xe">
                                                               <br>
                                                               
-                                                              <input type="button" value="Add To Contract" name="Contract" />
+                                                              <input type="button" value="Add To Contract" name="Contract" onclick="window.location.href='Contract?vehicleID=${vehicle.getVehicleId()}'"/>
                                                               <input type="button" value="Rent Now" name="Rent" onclick="window.location.href='order?vehicleID=${vehicle.getVehicleId()}'" />
                                                             </div>
 

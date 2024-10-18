@@ -9,26 +9,18 @@ import dal.DAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.RentalOrder;
 import model.Vehicle;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="Order", urlPatterns={"/order"})
-public class Order extends HttpServlet {
+@WebServlet(name="Contract", urlPatterns={"/Contract"})
+public class Contract extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,21 +30,13 @@ public class Order extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException, SQLException {
+    throws ServletException, IOException {
         DAO dao = new DAO();
-        HttpSession session = request.getSession();
         Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
-       // Integer.valueOf(session.getAttribute("userID").toString())
-        dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, null);
-        session.setAttribute("lou", dao.getLastOrderOfUserID(1));
         request.setAttribute("vehicle", v);
-        request.getRequestDispatcher("order.jsp").forward(request, response);
+        
     } 
-    public static void main(String[] args) throws SQLException {
-                DAO dao = new DAO();
-                dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, null);
-                System.out.println(dao.getLastOrderOfUserID(1));
-    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.
@@ -64,11 +48,7 @@ public class Order extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     } 
 
     /** 
@@ -81,11 +61,7 @@ public class Order extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
 
     /** 

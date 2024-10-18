@@ -45,6 +45,24 @@ public class DAO extends DBContext{
      return list;
     }
     
+    public List<Vehicle> getAllVehiclesByStatus(String status){
+     List<Vehicle> list = new ArrayList<>();
+        try {
+            String sql ="select* from Vehicle where status='"+status+"'";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                Vehicle v = new Vehicle(rs.getInt(1),rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6), rs.getInt(7), rs.getString(8), rs.getString(9), rs.getString(10));
+                list.add(v);
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+     return list;
+    }
+    
     public Vehicle getVehicleById(int id){
         try {
             String sql ="select * from Vehicle where vehicle_id="+id;
@@ -61,6 +79,33 @@ public class DAO extends DBContext{
             System.out.println(e.getMessage());
         }
         return null;
+    }
+    
+    public List<RentalOrder> getAllContractOfUserByStatus(int usedID, String status) {
+        String sql = "select * from RentalOrder where status='"+status+"' and name is not null";
+        List<RentalOrder> list = new ArrayList<>();
+        try {
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+            RentalOrder ro = new RentalOrder(
+                    rs.getInt("order_id"),
+                    rs.getInt("customer_id"),
+                    rs.getDate("start_date") != null ? rs.getDate("start_date").toLocalDate() : null,
+                    rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : null,
+                    rs.getDouble("total_amount"),
+                    rs.getString("status"),
+                    rs.getInt("deposit_paid"),
+                    rs.getDate("created_at") != null ? rs.getDate("created_at").toString() : null
+                );                
+            list.add(ro);
+            }
+            st.close();
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+     return list;
     }
     
     public RentalOrder getLastOrderOfUserID(int id) {
@@ -109,12 +154,20 @@ public class DAO extends DBContext{
      * @return 
      */
     
-  public void addRentalOrder(Integer customerId, LocalDate startDate, LocalDate endDate, String totalAmount, String status, Boolean depositPaid) {
+  public void addRentalOrder(Integer customerId, LocalDate startDate, LocalDate endDate, String totalAmount, String status, Boolean depositPaid, String name) throws SQLException {
     String sql = """
-                 INSERT INTO [dbo].[RentalOrder] (customer_id, start_date, end_date, total_amount, status, deposit_paid, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, GETDATE());
+                 INSERT INTO [dbo].[RentalOrder] (customer_id, start_date, end_date, total_amount, status, deposit_paid, name, created_at )
+                 VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE());
                  """;
-
+   String sql1="delete from RentalOrder\n" +"where status='Waiting' and name is null";
+      try(PreparedStatement pstm1 = connection.prepareStatement(sql1)) {
+           int rowsDelete = pstm1.executeUpdate();
+             if (rowsDelete >= 0) {
+            System.out.println("Dữ liệu đã được xóa thành công.");
+        }
+      } catch (SQLException e) {
+                  System.out.println("Lỗi khi xóa dữ liệu: " + e.getMessage());
+      }
     try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
         pstmt.setInt(1, customerId);
         
@@ -133,6 +186,7 @@ public class DAO extends DBContext{
         pstmt.setBigDecimal(4, new java.math.BigDecimal(totalAmount));
         pstmt.setString(5, status);
         pstmt.setBoolean(6, depositPaid != null && depositPaid);
+        pstmt.setString(7, name);
 
         int rowsInserted = pstmt.executeUpdate();
         if (rowsInserted > 0) {
