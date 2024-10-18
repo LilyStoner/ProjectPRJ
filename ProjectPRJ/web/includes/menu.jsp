@@ -4,7 +4,7 @@
 						<ul>
 							<li><a href="home" class="active">Home</a></li>
 
-							<li><a href="offers.html">Offers</a></li>
+							<li><a href="Contract">Contracts</a></li>
 
 							<li><a href="fleet.html">Fleet</a></li>
 

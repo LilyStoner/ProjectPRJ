@@ -82,7 +82,7 @@ public class DAO extends DBContext{
     }
     
     public List<RentalOrder> getAllContractOfUserByStatus(int usedID, String status) {
-        String sql = "select * from RentalOrder where status='"+status+"' and name is not null";
+        String sql = "select * from RentalOrder join Customer on RentalOrder.customer_id=Customer.customer_id where status='"+status+"' and user_id="+usedID;
         List<RentalOrder> list = new ArrayList<>();
         try {
             Statement st = connection.createStatement();
@@ -269,6 +269,7 @@ public class DAO extends DBContext{
  
     
     public static void main(String[] args) {
-       
+       DAO dao = new DAO();
+        System.out.println(dao.getAllContractOfUserByStatus(1, "Pending"));
     }
 }
