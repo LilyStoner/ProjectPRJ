@@ -81,8 +81,8 @@ public class DAO extends DBContext{
         return null;
     }
     
-    public List<RentalOrder> getAllContractOfUserByStatus(int usedID, String status) {
-        String sql = "select * from RentalOrder join Customer on RentalOrder.customer_id=Customer.customer_id where status='"+status+"' and user_id="+usedID;
+    public List<RentalOrder> getAllContractOfCustomerByStatus(int customerID, String status) {
+        String sql = "select * from RentalOrder join Customer on RentalOrder.customer_id=Customer.customer_id where status='"+status+"' and user_id="+customerID;
         List<RentalOrder> list = new ArrayList<>();
         try {
             Statement st = connection.createStatement();
@@ -96,7 +96,8 @@ public class DAO extends DBContext{
                     rs.getDouble("total_amount"),
                     rs.getString("status"),
                     rs.getInt("deposit_paid"),
-                    rs.getDate("created_at") != null ? rs.getDate("created_at").toString() : null
+                    rs.getDate("created_at") != null ? rs.getDate("created_at").toString() : null,
+                    rs.getString("name")
                 );                
             list.add(ro);
             }
@@ -108,7 +109,7 @@ public class DAO extends DBContext{
      return list;
     }
     
-    public RentalOrder getLastOrderOfUserID(int id) {
+    public RentalOrder getLastOrderOfCustomerID(int id) {
     String sql = """
                  SELECT TOP 1 * 
                  FROM [dbo].[RentalOrder] 
@@ -129,7 +130,8 @@ public class DAO extends DBContext{
                     rs.getDouble("total_amount"),
                     rs.getString("status"),
                     rs.getInt("deposit_paid"),
-                    rs.getDate("created_at") != null ? rs.getDate("created_at").toString() : null
+                    rs.getDate("created_at") != null ? rs.getDate("created_at").toString() : null,
+                    rs.getString("name")
                 );
                 return ro;
             }
@@ -150,6 +152,7 @@ public class DAO extends DBContext{
      * @param totalAmount
      * @param status
      * @param depositPaid
+     * @param name
      * @param createdAt
      * @return 
      */
@@ -265,11 +268,28 @@ public class DAO extends DBContext{
     }
       addOrderVehicle(orderId, vehicleID, startDate, endDate);
 }
+     public void deleteRentalOrder(int customerId, int orderId) {
+        String sql = "DELETE FROM RentalOrder WHERE order_id = ? AND customer_id = ?";
+    
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
+            statement.setInt(1, orderId);
+            statement.setInt(2, customerId);
+            
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Rental order deleted successfully.");
+            } else {
+                System.out.println("No rental order found with the specified order ID and customer ID.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+  
  
     
     public static void main(String[] args) {
        DAO dao = new DAO();
-        System.out.println(dao.getAllContractOfUserByStatus(1, "Pending"));
     }
 }
