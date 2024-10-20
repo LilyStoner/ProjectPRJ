@@ -232,6 +232,37 @@ public class DAO extends DBContext{
         System.out.println("Lỗi khi thêm đơn thuê xe: " + e.getMessage());
     }
 }
+      public RentalOrder getRentalOrderById(int orderId) {
+        RentalOrder rentalOrder = null;
+        String sql = "SELECT * FROM RentalOrder WHERE order_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, orderId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int paid=0;
+                if (resultSet.getBoolean("deposit_paid")) {
+                    paid=1;
+                }
+                rentalOrder = new RentalOrder(
+                        resultSet.getInt("order_id"),
+                        resultSet.getInt("customer_id"),
+                       resultSet.getDate("start_date") != null ? resultSet.getDate("start_date").toLocalDate() : null,
+                    resultSet.getDate("end_date") != null ? resultSet.getDate("end_date").toLocalDate() : null,
+                     resultSet.getDouble("total_amount"),
+                        resultSet.getString("status"),
+                        paid,
+                    resultSet.getDate("created_at") != null ? resultSet.getDate("created_at").toString() : null,
+                                                resultSet.getString("name")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return rentalOrder;
+    }
 
   public void updateRentalOrder(Integer orderId, LocalDate startDate, LocalDate endDate, String totalAmount, String status, Boolean depositPaid, Integer vehicleID) {
     String sql = """

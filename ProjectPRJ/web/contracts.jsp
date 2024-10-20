@@ -162,7 +162,8 @@
                                                 <input type="hidden" name="orderID" value="${order.getOrderId()}" readonly="readonly" />
                                                 <button type="submit" value="View" name="action" >View</button>
                                                 <button type="submit" value="Delete" name="action" >Del</button>
-                                                <%if (add) %> <button type="submit" value="Add" name="action" >Add</button>
+                                                <%if (add) %> 
+                                                <button type="submit" value="Add" name="action" >Add</button>
 
                                             </form>
                                     </td>
