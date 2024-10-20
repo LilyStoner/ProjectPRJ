@@ -41,7 +41,13 @@
     <a href="home" class="btn btn-primary" style="margin-top: 20px;">Back To Home Page</a>
 
                                         
-                                        <jsp:include page="includes/menu.jsp" />
+                                        <jsp:include page="includes/footer.jsp" />
+            <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/main.js"></script>
 
 
     </body>

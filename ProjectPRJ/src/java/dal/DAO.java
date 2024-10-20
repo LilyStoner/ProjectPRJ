@@ -83,6 +83,31 @@ public class DAO extends DBContext{
         return null;
     }
     
+      public List<OrderVehicle> getAllOrderVehiclesByOrderId(int orderId) {
+        List<OrderVehicle> orderVehicles = new ArrayList<>();
+        String query = "SELECT * FROM OrderVehicle WHERE order_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, orderId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                OrderVehicle orderVehicle = new OrderVehicle(
+                resultSet.getInt("order_vehicle_id"),
+                resultSet.getInt("order_id"),
+                resultSet.getInt("vehicle_id"),
+                resultSet.getDate("pickup_date") != null ? resultSet.getDate("pickup_date").toLocalDate() : null,
+                resultSet.getDate("return_date") != null ? resultSet.getDate("return_date").toLocalDate() : null   
+                );
+                orderVehicles.add(orderVehicle);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Xử lý ngoại lệ tùy thuộc vào nhu cầu
+        }
+
+        return orderVehicles;
+    }
+    
     public List<RentalOrder> getAllContractOfCustomerByStatus(int customerID, String status) {
         String sql = "select * from RentalOrder join Customer on RentalOrder.customer_id=Customer.customer_id where status='"+status+"' and user_id="+customerID;
         List<RentalOrder> list = new ArrayList<>();
@@ -299,15 +324,15 @@ public class DAO extends DBContext{
     } catch (SQLException e) {
         System.out.println("Lỗi khi cập nhật dữ liệu: " + e.getMessage());
     }
-      addOrderVehicle(orderId, vehicleID, startDate, endDate);
+    if(vehicleID!=null)  addOrderVehicle(orderId, vehicleID, startDate, endDate);
 }
      public void deleteRentalOrder(int customerId, int orderId) {
-        String sql = "DELETE FROM RentalOrder WHERE order_id = ? AND customer_id = ?";
-    
+        String sql = "delete from OrderVehicle where order_id = ? DELETE FROM RentalOrder WHERE order_id = ? AND customer_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, orderId);
-            statement.setInt(2, customerId);
+            statement.setInt(2, orderId);
+            statement.setInt(3, customerId);
             
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {

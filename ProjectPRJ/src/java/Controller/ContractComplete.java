@@ -14,18 +14,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import model.OrderVehicle;
+import java.time.LocalDate;
 import model.RentalOrder;
-import model.Vehicle;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="viewContracts", urlPatterns={"/viewContract"})
-public class viewContracts extends HttpServlet {
+@WebServlet(name="ContractComplete", urlPatterns={"/ContractComplete"})
+public class ContractComplete extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -37,16 +34,14 @@ public class viewContracts extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         DAO dao = new DAO();
-        RentalOrder ro = (RentalOrder) request.getAttribute("ro");
         HttpSession session = request.getSession();
-        List<OrderVehicle> ov = dao.getAllOrderVehiclesByOrderId(ro.getOrderId());
-        List<Vehicle> listVehicle = new ArrayList<>();
-        for (OrderVehicle orderVehicle : ov) {
-            listVehicle.add(dao.getVehicleById(orderVehicle.getVehicleId()));
-        }
-        request.setAttribute("vList", listVehicle);
-        session.setAttribute("ro", ro);
-        request.getRequestDispatcher("viewContract.jsp").forward(request, response);
+        RentalOrder ro = (RentalOrder) session.getAttribute("ro");
+         LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
+        LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
+        String totalAmount =  request.getParameter("total_amount");
+        totalAmount=totalAmount.substring(0, totalAmount.length()-2);
+        dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, null);   
+        request.getRequestDispatcher("contract_complete.jsp").forward(request, response);
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

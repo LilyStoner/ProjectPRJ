@@ -29,7 +29,7 @@
 
         <style>
             /* Định dạng cho form pop-up */
-           
+
             .popup-form {
                 display: none;
                 position: fixed;
@@ -75,7 +75,7 @@
                 String status = (String)request.getAttribute("status");
             %>
             <div class="container">
-                <h1 class="text-center"><%=status%> Contracts</h1>
+                <h1 class="text-center"><%= status != null ? status : "" %> Contracts</h1>
 
                 <!-- Buttons to filter rental orders by status -->
                 <div class="text-center" style="margin-bottom:2em">
@@ -101,7 +101,7 @@
 
                 <div class="popup-form" id="popupForm">
                     <h3>Create Rental Order</h3>
-                    <%if (add) { vehicleID = Integer.parseInt(request.getParameter("vehicleID"));%>  
+                    <%if (add) { %>  
                     <form id="createOrderForm" action="Contract?vehicleID=<%=vehicleID%>" method="POST">
                         <% } else {%>
                         <form id="createOrderForm" action="Contract" method="POST">
@@ -120,9 +120,6 @@
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <%
-                                          if(status!=null&&status.equalsIgnoreCase("waiting")) 
-                                %>
                                 <th>Name</th>
                                 <th>Pickup Date</th>
                                 <th>Return Date</th>
@@ -135,9 +132,6 @@
                         <tbody>
                             <c:forEach var="order" items="${list}">
                                 <tr>
-                                    <%
-                                                      if(status!=null&&status.equalsIgnoreCase("waiting")) 
-                                    %>
                                     <td>${order.getName()}</td>
                                     <td>${order.getStartDate()}</td>
                                     <td>${order.getEndDate()}</td>
@@ -153,18 +147,25 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>     
-                                    <td> <%if (add) { vehicleID = Integer.parseInt(request.getParameter("vehicleID"));%>  
-                                        <form action="Contract?vehicleID=<%=vehicleID%>" method="POST" style="display: flex; justify-content: space-evenly">
-
+                                    <td> <%if (add) { %>  
+                                        <form action="Contract" method="POST" style="display: flex; justify-content: space-evenly">
+                                                              <input type="hidden" name="vehicleID" value="<%=vehicleID%>" readonly="readonly" />
                                             <% } else {%>
                                             <form action="Contract" method="POST" style="display: flex; justify-content: space-evenly">
                                                 <%}%>
+                                                <input type="hidden" name="status" value="<%=status%>" readonly="readonly" />
                                                 <input type="hidden" name="orderID" value="${order.getOrderId()}" readonly="readonly" />
                                                 <button type="submit" value="View" name="action" >View</button>
+                                                <%
+                                                if(status!=null&&(status.equalsIgnoreCase("waiting")||status.equalsIgnoreCase("pending"))) {
+                                                %>
                                                 <button type="submit" value="Delete" name="action" >Del</button>
-                                                <%if (add) %> 
+                                                <%
+                                                    }
+                                                %>
+                                                <%if (add) {%> 
                                                 <button type="submit" value="Add" name="action" >Add</button>
-
+                                                <%}%>
                                             </form>
                                     </td>
                                 </tr>

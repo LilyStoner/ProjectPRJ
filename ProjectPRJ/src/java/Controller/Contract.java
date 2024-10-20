@@ -36,6 +36,7 @@ public class Contract extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws java.sql.SQLException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
@@ -45,7 +46,7 @@ public class Contract extends HttpServlet {
         String action = request.getParameter("action");
       
         String contractName = request.getParameter("contractName");
-        if (contractName != null) {
+        if (contractName != null && !contractName.isEmpty() ) {
             dao.addRentalOrder(customerID, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, contractName);
         }
 
@@ -55,25 +56,29 @@ public class Contract extends HttpServlet {
             status = "Waiting";
         }
         request.setAttribute("status", status);
-        List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(1, status);
-        request.setAttribute("list", list);
-
-        try {
-            Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
+       
+            
+            int vid = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
+            Vehicle v = dao.getVehicleById(vid);
             request.setAttribute("vehicle", v);
-              int orderID = Integer.parseInt(request.getParameter("orderID"));
+            String oid = request.getParameter("orderID");
+            if(oid!=null){
+                int orderID = Integer.parseInt(oid);
+                RentalOrder ro = dao.getRentalOrderById(orderID);
+                request.setAttribute("ro", ro);
             if (action.equalsIgnoreCase("Delete")) {
                 dao.deleteRentalOrder(customerID, orderID);
             }
-            if (action.equalsIgnoreCase("Add")) {
-                RentalOrder ro = dao.getRentalOrderById(orderID);
-                dao.addOrderVehicle(orderID, v.getVehicleId(), ro.getStartDate() , ro.getEndDate());
-                request.setAttribute("ro", ro);
+            if (action.equalsIgnoreCase("View")) {
                 request.getRequestDispatcher("viewContract").forward(request, response);
             }
-        } catch (NumberFormatException e) {
+            if (action.equalsIgnoreCase("Add")) {
+                dao.addOrderVehicle(orderID, v.getVehicleId(), ro.getStartDate() , ro.getEndDate());
+                request.getRequestDispatcher("viewContract").forward(request, response);
+            }
         }
-        
+         List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(customerID, status);
+        request.setAttribute("list", list);
         
         request.getRequestDispatcher("contracts.jsp").forward(request, response);
     }
@@ -132,4 +137,33 @@ public class Contract extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+       private int vehicleValid(String vehicle,  List<Vehicle> listVehicle) {
+        Boolean check = true;
+        int id = -1;
+        if (vehicle == null) {
+            check = false;
+        } else {
+            try {
+                id = Integer.parseInt(vehicle);
+            } catch (NumberFormatException e) {
+                check = false;
+            }
+
+            boolean found = false;
+            for (Vehicle vehicle1 : listVehicle) {
+                if (vehicle1.getVehicleId() == id) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                check = false;
+            }
+        }
+        if (check==false) {
+            return -1;
+        }
+        else return id;
+    }
 }
