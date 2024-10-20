@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -38,11 +39,13 @@ public class Contract extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException, SQLException {
         DAO dao = new DAO();
+        HttpSession session = request.getSession();
+        int customerID=1;
         String action = request.getParameter("action");
         try {
             int orderID = Integer.parseInt(request.getParameter("orderID"));
         if(action.equalsIgnoreCase("Delete")) {
-            dao.deleteRentalOrder(1, orderID);
+            dao.deleteRentalOrder(customerID, orderID);
         } 
         } catch (Exception e) {
         }
@@ -50,7 +53,7 @@ public class Contract extends HttpServlet {
         
         String contractName = request.getParameter("contractName");
         if(contractName!=null) {
-        dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, contractName);
+        dao.addRentalOrder(customerID, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, contractName);
         }
         
         
