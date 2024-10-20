@@ -44,14 +44,14 @@ public class Order extends HttpServlet {
         Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
        // Integer.valueOf(session.getAttribute("userID").toString())
         dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, null);
-        session.setAttribute("lou", dao.getLastOrderOfUserID(1));
+        session.setAttribute("lou", dao.getLastOrderOfCustomerID(1));
         request.setAttribute("vehicle", v);
         request.getRequestDispatcher("order.jsp").forward(request, response);
     } 
     public static void main(String[] args) throws SQLException {
                 DAO dao = new DAO();
                 dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, null);
-                System.out.println(dao.getLastOrderOfUserID(1));
+                System.out.println(dao.getLastOrderOfCustomerID(1));
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 

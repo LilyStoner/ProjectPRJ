@@ -23,12 +23,13 @@ public class RentalOrder {
     private String status;
     private int depositPaid;
     private String createdAt;
+    private String name;
 
     // Constructor
     public RentalOrder() {
     }
 
-    public RentalOrder(int orderId, int customerId, LocalDate startDate, LocalDate endDate, Double totalAmount, String status, int depositPaid, String createdAt) {
+    public RentalOrder(int orderId, int customerId, LocalDate startDate, LocalDate endDate, Double totalAmount, String status, int depositPaid, String createdAt, String name) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.startDate = startDate;
@@ -37,6 +38,11 @@ public class RentalOrder {
         this.status = status;
         this.depositPaid = depositPaid;
         this.createdAt = createdAt;
+        this.name=name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     // Getters and setters
@@ -89,20 +95,12 @@ public class RentalOrder {
         this.createdAt = createdAt;
     }
 
-    // Override toString() method for debugging
     @Override
     public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
-                ", customerId=" + customerId +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", totalAmount=" + totalAmount +
-                ", status='" + status + '\'' +
-                ", depositPaid=" + depositPaid +
-                ", createdAt=" + createdAt +
-                '}';
+        return "RentalOrder{" + "orderId=" + orderId + ", customerId=" + customerId + ", startDate=" + startDate + ", endDate=" + endDate + ", totalAmount=" + totalAmount + ", status=" + status + ", depositPaid=" + depositPaid + ", createdAt=" + createdAt + ", name=" + name + '}';
     }
+
+            
 
     public LocalDate getStartDate() {
         return startDate;
@@ -118,5 +116,9 @@ public class RentalOrder {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public String getName() {
+        return name;
     }
 }

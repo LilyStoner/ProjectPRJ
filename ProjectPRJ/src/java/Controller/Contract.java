@@ -13,7 +13,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.RentalOrder;
 import model.Vehicle;
 
@@ -32,24 +36,49 @@ public class Contract extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    throws ServletException, IOException, SQLException {
         DAO dao = new DAO();
+        String action = request.getParameter("action");
+        try {
+            int orderID = Integer.parseInt(request.getParameter("orderID"));
+        if(action.equalsIgnoreCase("Delete")) {
+            dao.deleteRentalOrder(1, orderID);
+        } 
+        } catch (Exception e) {
+        }
+       
         
-            String status = request.getParameter("status");
+        String contractName = request.getParameter("contractName");
+        if(contractName!=null) {
+        dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, contractName);
+        }
+        
+        
+        String status = request.getParameter("status");
+        
             if(status==null||status.isEmpty()) {
                 status="Waiting";
             }
             request.setAttribute("status", status);
-            List<RentalOrder> list = dao.getAllContractOfUserByStatus(1, status);
+            List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(1, status);
             request.setAttribute("list", list);
+            
+            
         try {
             Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
             request.setAttribute("vehicle", v);
         } catch (NumberFormatException e) {
         }
-        
         request.getRequestDispatcher("contracts.jsp").forward(request, response);
-    } 
+            } 
+    
+    public static void main(String[] args) throws SQLException {
+                DAO dao = new DAO();
+         dao.addRentalOrder(1, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, "conca");
+            List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(1, "Waiting");
+            System.out.println(list);
+
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -62,7 +91,11 @@ public class Contract extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Contract.class.getName()).log(Level.SEVERE, null, ex);
+        }
     } 
 
     /** 
@@ -75,7 +108,11 @@ public class Contract extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Contract.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /** 

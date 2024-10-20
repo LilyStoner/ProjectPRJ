@@ -35,10 +35,10 @@
         <p><strong>Registration Number:</strong> ${vehicle.getRegistrationNumber()}</p>
         <p><strong>Pickup Date:</strong> ${pickup_date}</p>
         <p><strong>Return Date:</strong> ${return_date}</p>
-        <p><strong>Tổng số tiền:</strong> ${total_amount} $</p>
+        <p><strong>Total:</strong> ${total_amount} $</p>
     </div>
 
-    <a href="home" class="btn btn-primary" style="margin-top: 20px;">Trở về Trang Chủ</a>
+    <a href="home" class="btn btn-primary" style="margin-top: 20px;">Back To Home Page</a>
 
                                         
                                         <jsp:include page="includes/menu.jsp" />
