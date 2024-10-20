@@ -13,7 +13,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import model.Vehicle;
 
 /**
@@ -34,8 +38,32 @@ public class home extends HttpServlet {
         DAO dao = new DAO();
         List<Vehicle> listVehicle = dao.getAllVehicles();
         HttpSession session = request.getSession();
+        List<String> allType = new ArrayList<>();
+
+        Set<String> uniqueTypes = new HashSet<>();
+        for (Vehicle vehicle : listVehicle) {
+            String type = vehicle.getVehicleType();  
+            if (uniqueTypes.add(type)) {
+                allType.add(type); 
+            }
+        }
+        request.setAttribute("listType", allType);
         
+       String type = request.getParameter("Type");
+if (type != null && !type.isEmpty() && allType.contains(type)) {
+    // Sử dụng Iterator để duyệt và xóa
+    Iterator<Vehicle> iterator = listVehicle.iterator();
+    while (iterator.hasNext()) {
+        Vehicle v = iterator.next();
+        if (!v.getVehicleType().equalsIgnoreCase(type)||!v.getStatus().equalsIgnoreCase("available")) {
+            iterator.remove(); 
+        }
+    }
+}
         request.setAttribute("listVehicle", listVehicle);
+
+        
+        
         request.getRequestDispatcher("home.jsp").forward(request, response);
     } 
     public static void main(String[] args) {

@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.io.IOException, java.util.ArrayList, java.util.List,model.Vehicle"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML>
@@ -10,13 +11,13 @@
         <link rel="stylesheet" href="assets/css/main.css" />
         <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
         <style>
-                        .vehicle-prev,
+            .vehicle-prev,
             .vehicle-next {
                 width: 5%; /* Điều chỉnh kích thước nếu cần */
                 height: 20%;
                 top: 50%; /* Đặt mũi tên ở giữa hình ảnh */
                 transform: translateY(-62%); /* Căn giữa theo chiều dọc */
-                    background-color: rgba(182 ,176,176, 0.5); /* Màu nền đỏ, có độ trong suốt */
+                background-color: rgba(182 ,176,176, 0.5); /* Màu nền đỏ, có độ trong suốt */
 
             }
 
@@ -27,11 +28,68 @@
             .vehicle-next {
                 right: -5rem; /* Đặt khoảng cách bên phải */
             }
-                        .vehicle-prev:hover,
+            .vehicle-prev:hover,
             .vehicle-next:hover {
                 background-color: rgba(182 ,176,176,  0.7); /* Màu nền đỏ đậm khi hover */
             }
         </style>
+        
+              <script>
+                      function setTodayAsPickupDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Lấy tháng từ 0-11 nên cần +1
+        const day = String(today.getDate()).padStart(2, '0');
+
+        // Gán giá trị cho input pickup_date
+        const formattedToday = year+'-'+month+'-'+day;
+        document.getElementById("pickup_date").value = formattedToday;
+    }
+
+    // Gọi hàm khi trang được tải
+    window.onload = function() {
+        const pickupDateInput = document.getElementById("pickup_date");
+        const returnDateInput = document.getElementById("return_date");
+        if (!pickupDateInput.value) {
+    setTodayAsPickupDate(); 
+}       
+         if (returnDateInput.value&&pickupDateInput.value) {
+    validateDates();
+}       
+        
+
+    };
+                            function validateDates() {
+
+                        const pickupDateInput = document.getElementById("pickup_date");
+                        const returnDateInput = document.getElementById("return_date");
+                        const submitButton = document.getElementById("submit_btn");
+
+                        const pickupDate = new Date(pickupDateInput.value);
+                        const returnDate = new Date(returnDateInput.value);
+                        const currentDate = new Date();
+
+                        document.getElementById("error_pickup").innerHTML = "";
+                        document.getElementById("error_return").innerHTML = "";
+
+                        let isValid = true;
+                        currentDate.setHours(0, 0, 0, 0);
+                        pickupDate.setHours(1,0,0,0);
+                        returnDate.setHours(2,0,0,0);
+                        if (pickupDate <= currentDate) {
+                            document.getElementById("error_pickup").innerHTML = "Pickup date must be greater than today.";
+                            isValid = false;
+                        }
+
+                        if (returnDate-1 <= pickupDate) {
+                            document.getElementById("error_return").innerHTML = "Return date must be greater than pickup date.";
+                            isValid = false;
+                        }
+                        submitButton.disabled = !isValid;
+                    }
+
+    </script>
+
     </head>
     <body class="is-preload">
         <!-- Wrapper -->
@@ -59,8 +117,8 @@
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+
                         <span class="sr-only">Previous</span>
                     </a>
                     <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
@@ -76,7 +134,53 @@
                     <!-- About Us -->
                     <header id="inner">
                         <h1>Rent a car at low prices</h1>
-                        <p>Etiam quis viverra lorem, in semper lorem. Sed nisl arcu euismod sit amet nisi euismod sed cursus arcu elementum ipsum arcu vivamus quis venenatis orci lorem ipsum et magna feugiat veroeros aliquam. Lorem ipsum dolor sit amet nullam dolore.</p>
+                        <form action="home">
+                            <%
+                                String returnDate = request.getParameter("return_date");
+                                String pickupDate = request.getParameter("pickup_date");
+                            %>
+                            <div class="form-date" style="display: flex">
+                                <div class="date-in">
+                                    <label for="pickup_date">Pickup Date:</label>
+                                    <%
+                                    if(pickupDate!=null && !pickupDate.isBlank() && !pickupDate.isEmpty())
+                                    {%>
+                                    <input type="date" id="pickup_date" value="<%=pickupDate%>" name="pickup_date" oninput="validateDates()" required >
+                                   <%}else {%>
+                                    <input type="date" id="pickup_date" name="pickup_date" oninput="validateDates()"  >
+                                    <%}%>
+                                    <br>
+                                    <span id="error_pickup" style="color:red"></span>
+                                    <label style="margin: 1em 0 0 0; font-size: 1.1em"for="type">Type: </label>
+                                         
+
+                                    <select name="Type" oninput="validateDates()">
+                                          <% String type = request.getParameter("Type");
+                                    if(type!=null && !type.isBlank() && !type.isEmpty()) {                                   
+                                          %>  
+                                        <option><%=type%></option>
+                                        <%}%>
+                                        <option>All</option>
+                                        <c:forEach items="${listType}" var="t">
+                                            <option>${t}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="date-in" style="margin-left: 3em">
+                                    <label for="return_date">Return Date:</label>
+                                     <%
+                                    if(returnDate!=null && !returnDate.isBlank() && !returnDate.isEmpty()) {
+                                    %>
+                                    <input type="date" id="return_date" value="<%=returnDate%>" name="return_date" oninput="validateDates()" required >
+                                    <%} else {%>
+                                    <input type="date" id="return_date" name="return_date" oninput="validateDates()" required >
+                                    <%}%>
+                                    <br>
+                                    <span id="error_return" style="color:red"></span>
+                                </div>
+                            </div>
+                            <button style="margin-top: 2em" type="submit" id="submit_btn" disabled>Search</button>
+                        </form>
                     </header>
 
                     <br>

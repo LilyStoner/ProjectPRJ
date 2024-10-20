@@ -457,6 +457,35 @@ public class DAO extends DBContext{
         }
 
     }
+    public int Emp_checkConfirm(int order_id, int vehicle_id) {
+        int r = -1;
+        try {
+            String sql = "DECLARE @pick Date, @return Date, @v_id int, @o_id int\n"
+                    + "set @v_id = "+vehicle_id+"\n"
+                    + "set @o_id = "+order_id+"\n"
+                    + "\n"
+                    + "select @pick = o.pickup_date,@return = o.return_date from OrderVehicle o join RentalOrder r\n"
+                    + "on o.order_id = r.order_id\n"
+                    + "where o.vehicle_id = @v_id\n"
+                    + "\n"
+                    + "select r.order_id from OrderVehicle o join RentalOrder r\n"
+                    + "on o.order_id = r.order_id\n"
+                    + "where r.status = N'confirmed' \n"
+                    + "	and (@return between o.pickup_date and o.return_date or @pick between o.pickup_date and o.return_date or o.pickup_date between @pick and @return or o.return_date between @pick and @return)\n"
+                    + "	and o.vehicle_id = @v_id\n"
+                    + "	and r.order_id != @o_id";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                r=rs.getInt(1);
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return r;
+    }
   
  
     

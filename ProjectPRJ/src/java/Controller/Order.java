@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.RentalOrder;
@@ -42,8 +43,12 @@ public class Order extends HttpServlet {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
         int customerID=1;
-        
-        Vehicle v = dao.getVehicleById(Integer.parseInt(request.getParameter("vehicleID")));
+        int vehicleID = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
+        if (vehicleID==-1) {
+            response.sendRedirect("home");
+            return;
+        }
+        Vehicle v = dao.getVehicleById(vehicleID);
        // Integer.valueOf(session.getAttribute("userID").toString())
         dao.addRentalOrder(customerID, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, null);
         session.setAttribute("lou", dao.getLastOrderOfCustomerID(customerID));
@@ -98,5 +103,34 @@ public class Order extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    private int vehicleValid(String vehicle,  List<Vehicle> listVehicle) {
+        Boolean check = true;
+        int id = -1;
+        if (vehicle == null) {
+            check = false;
+        } else {
+            try {
+                id = Integer.parseInt(vehicle);
+            } catch (NumberFormatException e) {
+                check = false;
+            }
 
+            boolean found = false;
+            for (Vehicle vehicle1 : listVehicle) {
+                if (vehicle1.getVehicleId() == id && vehicle1.getStatus().equalsIgnoreCase("available")) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                check = false;
+            }
+        }
+        if (check==false) {
+            return -1;
+        }
+        else return id;
+    }
 }
