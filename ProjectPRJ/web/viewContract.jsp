@@ -30,7 +30,8 @@
                         const pickupDateInput = document.getElementById("pickup_date");
                         const returnDateInput = document.getElementById("return_date");
                         const submitButton = document.getElementById("submit_btn");
-
+                        const saveButton = document.getElementById("save");
+                        
                         const pickupDate = new Date(pickupDateInput.value);
                         const returnDate = new Date(returnDateInput.value);
                         const currentDate = new Date();
@@ -65,6 +66,7 @@
                         }
 
                         submitButton.disabled = !isValid;
+                        saveButton.disabled = !isValid;
                     }
 
     </script>
@@ -122,6 +124,7 @@
                 <label for="total-amount" style="font-size:24px; margin: 0 0 0.2em 0">Total Amount:</label> 
                 <input id="result" type="text" name="total_amount" value="0$" readonly="readonly" />
                 <button type="submit" id="submit_btn" disabled>Submit</button>
+                <button type="submit" id="save" disabled>Save</button>
             </form>
                         <%} else {%>
                          <label for="pickup_date">Pickup Date:</label>

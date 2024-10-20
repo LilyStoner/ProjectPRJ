@@ -89,7 +89,6 @@
                     <th>price per day</th>
                     <%if(rentalOrder.getStatus().equalsIgnoreCase("pending")){out.println("<th>status</th>");}%>
 
-                    <th>image</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,7 +104,6 @@
                     <td><%=v.getRegistrationNumber()%></td>
                     <td><%=v.getPricePerDay()%></td>
                     <%if(rentalOrder.getStatus().equalsIgnoreCase("pending")){%><td><%=v.getStatus()%></td><%}%>
-                    <td><img src="v.getImage()" alt="<%=v.getBrand()%> <%=v.getModel()%> image"></td>
                 </tr>
 
                 <%

@@ -109,11 +109,11 @@
                             <img src="${vehicle.getImage()}" alt="Hình ảnh xe">
                             <br>
                         
-                            <c:if test="${vehicle.status eq 'available'}">
+                            <c:if test="${vehicle.status eq 'available' || vehicle.status eq 'Available' }">
                                 <input type="button" value="Add To Contract" name="Contract" onclick="window.location.href = 'Contract?vehicleID=${vehicle.getVehicleId()}'"/>
                                 <input type="button" value="Rent Now" name="Rent" onclick="window.location.href = 'order?vehicleID=${vehicle.getVehicleId()}'" />
                             </c:if>
-                            <c:if test="${vehicle.status ne 'available'}">
+                            <c:if test="${vehicle.status ne 'available' && vehicle.status ne 'Available'}">
                                 <h1>This car not available now!</h1>
                             </c:if>
                                 
