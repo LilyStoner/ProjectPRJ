@@ -66,8 +66,23 @@ public class Contract extends HttpServlet {
         request.setAttribute("vehicle", v);
         String oid = request.getParameter("orderID");
         if (oid != null) {
-            int orderID = Integer.parseInt(oid);
+            int orderID = -1;
+            try {
+                 orderID = Integer.parseInt(oid);
+                 if(!dao.isARentalOrderOfCustomer(customerID, orderID)){  
+                   response.sendRedirect("home");
+             return;    
+            }
+            } catch (NumberFormatException e) {
+                  response.sendRedirect("home");
+             return;
+            }
+           
             RentalOrder ro = dao.getRentalOrderById(orderID);
+            if(!status.equalsIgnoreCase(ro.getStatus())){
+                response.sendRedirect("home");
+             return;
+            }
             request.setAttribute("ro", ro);
             if (action.equalsIgnoreCase("Delete")) {
                 dao.deleteRentalOrder(customerID, orderID);
@@ -99,13 +114,11 @@ public class Contract extends HttpServlet {
         }
         else{
              response.sendRedirect("home");
-       
+             return;
         }
         List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(customerID, status);
         request.setAttribute("list", list);
-
         request.getRequestDispatcher("contracts.jsp").forward(request, response);
-    
         }
     
 
@@ -174,35 +187,23 @@ public class Contract extends HttpServlet {
         }
         return false;
     }
-
+    
     private int vehicleValid(String vehicle, List<Vehicle> listVehicle) {
-        Boolean check = true;
-        int id = -1;
-        if (vehicle == null) {
-            check = false;
-        } else {
-            try {
-                id = Integer.parseInt(vehicle);
-            } catch (NumberFormatException e) {
-                check = false;
-            }
-
-            boolean found = false;
-            for (Vehicle vehicle1 : listVehicle) {
-                if (vehicle1.getVehicleId() == id && vehicle1.getStatus().equalsIgnoreCase("available")) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                check = false;
-            }
-        }
-        if (check == false) {
-            return -1;
-        } else {
-            return id;
-        }
+    if (vehicle == null) {
+        return -1;
     }
+
+    try {
+        int id = Integer.parseInt(vehicle);
+        for (Vehicle v : listVehicle) {
+            if (v.getVehicleId() == id && v.getStatus().equalsIgnoreCase("available")) {
+                return id;
+            }
+        }
+    } catch (NumberFormatException e) {
+        return -1;
+    }
+
+    return -1;
+}
 }

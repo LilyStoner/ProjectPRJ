@@ -289,6 +289,24 @@ public class DAO extends DBContext{
         return rentalOrder;
     }
 
+      public void deleteOrderVehicle(int vehicleId, int orderId) {
+          String SQL = "DELETE FROM OrderVehicle WHERE vehicle_id = ? AND order_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(SQL)) {
+             
+            // Gán giá trị vào câu lệnh SQL
+            statement.setInt(1, vehicleId);
+            statement.setInt(2, orderId);
+            
+            // Thực thi câu lệnh
+            int rowsDeleted = statement.executeUpdate();
+            if (rowsDeleted>0) {
+                System.out.println("Good");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+      
   public void updateRentalOrder(Integer orderId, LocalDate startDate, LocalDate endDate, String totalAmount, String status, Boolean depositPaid, Integer vehicleID) {
     String sql = """
                  UPDATE [dbo].[RentalOrder]
@@ -344,6 +362,47 @@ public class DAO extends DBContext{
             e.printStackTrace();
         }
     }
+        public List<RentalOrder> getAllRentalOrdersOfCustomer(int CustomerID){
+        String sql = "SELECT * FROM RentalOrder WHERE customer_id = ?";
+        List<RentalOrder> ro = new ArrayList<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, CustomerID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int paid=0;
+                if (resultSet.getBoolean("deposit_paid")) {
+                    paid=1;
+                }
+                ro.add(new RentalOrder(
+                        resultSet.getInt("order_id"),
+                        resultSet.getInt("customer_id"),
+                       resultSet.getDate("start_date") != null ? resultSet.getDate("start_date").toLocalDate() : null,
+                    resultSet.getDate("end_date") != null ? resultSet.getDate("end_date").toLocalDate() : null,
+                     resultSet.getDouble("total_amount"),
+                        resultSet.getString("status"),
+                        paid,
+                    resultSet.getDate("created_at") != null ? resultSet.getDate("created_at").toString() : null,
+                                                resultSet.getString("name")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ro;
+    }
+    
+    //check cac thu cac thu
+     public boolean isARentalOrderOfCustomer(int CustomerID, int orderID){
+         for (RentalOrder ro : getAllRentalOrdersOfCustomer(CustomerID)) {
+             if (ro.getOrderId()==orderID) {
+                 return true;
+             }
+         }
+         return false;   
+    }
+    //check cac thu cac thu
+
      
      
     public Map<Integer, RentalOrder> Emp_getListOrders() {
@@ -373,7 +432,7 @@ public class DAO extends DBContext{
         }
         return list;
     }
-
+ 
     public Map<Integer, Customer> Emp_getListCustomers() {
         Map<Integer, Customer> list = new HashMap<>();
         try {
@@ -547,5 +606,6 @@ public class DAO extends DBContext{
     
     public static void main(String[] args) {
        DAO dao = new DAO();
+        System.out.println(dao.getAllRentalOrdersOfCustomer(1));
     }
 }

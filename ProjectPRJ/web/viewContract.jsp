@@ -16,7 +16,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>OrderComplete</title>
+        <title>Contract Details</title>
         <title>PHPJabbers.com | Free Car Rental Website Template</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -75,17 +75,7 @@
     <body>
         <jsp:include page="includes/header.jsp" />  
         <jsp:include page="includes/menu.jsp" />
-        <div class="table-container">
-            <table class="table table-striped table-bordered">
-                <thead>
-                <th>Type</th>
-                <th>Model</th>
-                <th>Brand</th>
-                <th>Registration Number</th>
-                <th>Price Per Day</th>
-                </tr>
-                </thead>
-                <% 
+         <% 
                     String status = (String) request.getAttribute("status");
                     RentalOrder ro = (RentalOrder) request.getAttribute("ro");
                     double vehiclePricePerDay = 0;
@@ -94,6 +84,20 @@
                     vehiclePricePerDay+=v.getPricePerDay();
                     }
                 %>
+        <div class="table-container">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <th>Type</th>
+                <th>Model</th>
+                <th>Brand</th>
+                <th>Registration Number</th>
+                <th>Price Per Day</th>
+                 <%if(status.equalsIgnoreCase("waiting")){%> 
+                <th>Remove</th>
+                <%}%>
+                </tr>
+                </thead>
+               
                 <script>
                     var total = <%=vehiclePricePerDay%>
                     window.onload = function () {
@@ -111,11 +115,21 @@
                         <td>${v.getBrand()}</td>
                         <td>${v.getRegistrationNumber()}</td>
                         <td>${v.getPricePerDay()}</td>
+                    <%if(status.equalsIgnoreCase("waiting")){%>   
+                    <td style="display: flex;justify-content: center;align-items: center">
+                            <form action="viewContract" method="POST">
+                            <input type="hidden" name="status" value="<%=status%>" readonly="readonly" />
+                            <input type="hidden" name="vehicleremove" value="${v.getVehicleId()}" readonly="readonly" />
+                            <input type="hidden" name="orderremove" value="${ro.getOrderId()}" readonly="readonly" />
+                            <button type="submit" name="action" value="remove" >x</button>
+                            </form>
+                        </td>
+                        <%}%>
                     </tr>
                 </c:forEach>
             </table>
             <%
-             if(status.equalsIgnoreCase("waiting")) {
+             if(status!=null&&status.equalsIgnoreCase("waiting")) {
               if(ro.getStartDate()!=null&&ro.getEndDate()!=null){
             %>
             <form action="ContractComplete" method="POST">

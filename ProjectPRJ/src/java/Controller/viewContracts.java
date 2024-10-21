@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import model.OrderVehicle;
@@ -37,7 +38,27 @@ public class viewContracts extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         DAO dao = new DAO();
+        String status = request.getParameter("status");
+        request.setAttribute("status", status);
         RentalOrder ro = (RentalOrder) request.getAttribute("ro");
+        if(ro==null ) ro = dao.getRentalOrderById(Integer.parseInt(request.getParameter("orderremove")));
+        String action = request.getParameter("action");
+        if(action.equalsIgnoreCase("remove")) {
+                            int vehicleremomve = Integer.parseInt(request.getParameter("vehicleremove"));
+                            Vehicle v = dao.getVehicleById(vehicleremomve);
+            if (isVehicleInRentalOrder(ro, vehicleremomve, dao)) {
+                         boolean check = true;
+                    if (ro.getDepositPaid() == 0) {
+                        check = false;
+                    }
+                         if (ro.getStartDate() != null && ro.getEndDate() != null) {
+                   
+                        Double total = Double.parseDouble(ro.getTotalAmount()) - (-ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate()) + 1) * v.getPricePerDay();
+                        dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), check, null);
+                                      dao.deleteOrderVehicle(vehicleremomve, ro.getOrderId());  
+                    }             
+                }
+        }
         HttpSession session = request.getSession();
         List<OrderVehicle> ov = dao.getAllOrderVehiclesByOrderId(ro.getOrderId());
         List<Vehicle> listVehicle = new ArrayList<>();
@@ -46,8 +67,13 @@ public class viewContracts extends HttpServlet {
         }
         request.setAttribute("vList", listVehicle);
         session.setAttribute("ro", ro);
+        request.setAttribute("ro", ro);
         request.getRequestDispatcher("viewContract.jsp").forward(request, response);
     } 
+    public static void main(String[] args) {
+        
+    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -84,5 +110,14 @@ public class viewContracts extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+      private boolean isVehicleInRentalOrder(RentalOrder ro, int id, DAO dao) {
+        for (OrderVehicle ov : dao.getAllOrderVehiclesByOrderId(ro.getOrderId())) {
+            if (ov.getVehicleId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

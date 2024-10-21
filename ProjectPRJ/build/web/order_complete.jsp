@@ -38,9 +38,9 @@
         <p><strong>Total:</strong> ${total_amount} $</p>
     </div>
 
-    <a href="home" class="btn btn-primary" style="margin-top: 20px;">Back To Home Page</a>
-
-                                        
+         <button  onclick="window.location.href='home'">Back To Home Page</button>
+         <br>
+         <br>                                        
                                         <jsp:include page="includes/footer.jsp" />
             <!-- Scripts -->
             <script src="assets/js/jquery.min.js"></script>

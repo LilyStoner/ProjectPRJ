@@ -148,10 +148,10 @@
                                         </c:choose>
                                     </td>     
                                     <td> <%if (add) { %>  
-                                        <form action="Contract" method="POST" style="display: flex; justify-content: space-evenly">
+                                        <form action="Contract" method="Post" style="display: flex; justify-content: space-evenly">
                                                               <input type="hidden" name="vehicleID" value="<%=vehicleID%>" readonly="readonly" />
                                             <% } else {%>
-                                            <form action="Contract" method="POST" style="display: flex; justify-content: space-evenly">
+                                            <form action="Contract" method="Post" style="display: flex; justify-content: space-evenly">
                                                 <%}%>
                                                 <input type="hidden" name="status" value="<%=status%>" readonly="readonly" />
                                                 <input type="hidden" name="orderID" value="${order.getOrderId()}" readonly="readonly" />
@@ -179,12 +179,12 @@
 
                 </div>
 
-                <!-- Scripts -->
-                <script src="assets/js/jquery.min.js"></script>
-                <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-                <script src="assets/js/jquery.scrolly.min.js"></script>
-                <script src="assets/js/jquery.scrollex.min.js"></script>
-                <script src="assets/js/main.js"></script>
+                     <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/main.js"></script>
 
                 </body>
                 </html>
