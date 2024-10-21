@@ -21,6 +21,7 @@
          <jsp:include page="includes/header.jsp" />
             <jsp:include page="includes/menu.jsp" />
         <h1>Completed!</h1>
+            <a href="home" class="btn btn-primary" style="margin-top: 20px;">Back To Home Page</a>
             <script src="assets/js/jquery.min.js"></script>
             <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
             <script src="assets/js/jquery.scrolly.min.js"></script>

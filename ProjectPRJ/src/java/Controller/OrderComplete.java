@@ -35,12 +35,14 @@ public class OrderComplete extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
+        int CustomerID=1;
         RentalOrder ro = (RentalOrder) session.getAttribute("lou");
         int vehicleID=Integer.parseInt(request.getParameter("vehicleID"));
         LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
         LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
         String totalAmount =  request.getParameter("total_amount");
         totalAmount=totalAmount.substring(0, totalAmount.length()-2);
+        if(isValidContractInListContractOfCustomerID(dao, ro, CustomerID))
         dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, vehicleID);
         request.setAttribute("vehicleID", vehicleID);
         request.setAttribute("pickup_date", pickupDate);
@@ -49,6 +51,16 @@ public class OrderComplete extends HttpServlet {
         request.setAttribute("total_amount",totalAmount);
         request.getRequestDispatcher("order_complete.jsp").forward(request, response);
     } 
+    
+     Boolean isValidContractInListContractOfCustomerID(DAO dao, RentalOrder ro , int CustomerID){
+        for (RentalOrder r : dao.getAllContractOfCustomerByStatus(CustomerID, "waiting")) {
+            if (r.getOrderId()==ro.getOrderId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+   
    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 

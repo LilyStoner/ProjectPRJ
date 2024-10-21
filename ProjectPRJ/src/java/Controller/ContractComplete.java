@@ -35,18 +35,28 @@ public class ContractComplete extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
+        int CustomerID = 1;
         String action = request.getParameter("action");
         RentalOrder ro = (RentalOrder) session.getAttribute("ro");
          LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
         LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
         String totalAmount =  request.getParameter("total_amount");
         totalAmount=totalAmount.substring(0, totalAmount.length()-2);
-        if(ro.getStatus().equalsIgnoreCase("waiting")) {
+        if(isValidContractInListContractOfCustomerID(dao, ro, CustomerID)) {
             if(action.equalsIgnoreCase("submit"))dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, null);
             if(action.equalsIgnoreCase("save"))dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Waiting", Boolean.FALSE, null);
         }   
         request.getRequestDispatcher("contract_complete.jsp").forward(request, response);
     } 
+    
+    Boolean isValidContractInListContractOfCustomerID(DAO dao, RentalOrder ro , int CustomerID){
+        for (RentalOrder r : dao.getAllContractOfCustomerByStatus(CustomerID, "waiting")) {
+            if (r.getOrderId()==ro.getOrderId()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 

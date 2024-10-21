@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package Controller;
-
+import static com.oracle.wls.shaded.org.apache.xpath.axes.HasPositionalPredChecker.check;
+import java.time.temporal.ChronoUnit;
 import dal.DAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -74,6 +75,14 @@ public class Contract extends HttpServlet {
             }
             if (action.equalsIgnoreCase("Add")) {
                 dao.addOrderVehicle(orderID, v.getVehicleId(), ro.getStartDate() , ro.getEndDate());
+                if(ro.getStartDate()!=null&&ro.getEndDate()!=null) {
+                    boolean check = true;
+                    if(ro.getDepositPaid()==0) check =false;
+                    Double total = Double.parseDouble(ro.getTotalAmount())+(-ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate())+1)*v.getPricePerDay();      
+                    dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), check, null);
+                ro = dao.getRentalOrderById(orderID);
+                request.setAttribute("ro", ro);
+                }
                 request.getRequestDispatcher("viewContract").forward(request, response);
             }
         }
@@ -85,8 +94,11 @@ public class Contract extends HttpServlet {
 
     public static void main(String[] args) throws SQLException {
         DAO dao = new DAO();
-        System.out.println(dao.getRentalOrderById(91));
-        
+        RentalOrder ro = dao.getRentalOrderById(190);
+        Double total = Double.valueOf(ro.getTotalAmount());
+        Double total2 = 2000.02*((ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate()))+1);
+        System.out.println(String.format("%.2f", total2));
+        dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), true, null);
 
     }
 
