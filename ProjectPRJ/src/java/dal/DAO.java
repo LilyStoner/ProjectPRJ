@@ -324,7 +324,7 @@ public class DAO extends DBContext{
     } catch (SQLException e) {
         System.out.println("Lỗi khi cập nhật dữ liệu: " + e.getMessage());
     }
-    if(vehicleID!=null)  addOrderVehicle(orderId, vehicleID, startDate, endDate);
+    if(vehicleID!=null)  addOrderVehicle(orderId, vehicleID, null, null);
 }
      public void deleteRentalOrder(int customerId, int orderId) {
         String sql = "delete from OrderVehicle where order_id = ? DELETE FROM RentalOrder WHERE order_id = ? AND customer_id = ?";

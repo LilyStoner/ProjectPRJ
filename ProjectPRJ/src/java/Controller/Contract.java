@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package Controller;
+
 import static com.oracle.wls.shaded.org.apache.xpath.axes.HasPositionalPredChecker.check;
 import java.time.temporal.ChronoUnit;
 import dal.DAO;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.OrderVehicle;
 import model.RentalOrder;
 import model.Vehicle;
 
@@ -45,9 +47,9 @@ public class Contract extends HttpServlet {
         HttpSession session = request.getSession();
         int customerID = 1;
         String action = request.getParameter("action");
-      
+
         String contractName = request.getParameter("contractName");
-        if (contractName != null && !contractName.isEmpty() ) {
+        if (contractName != null && !contractName.isEmpty()) {
             dao.addRentalOrder(customerID, LocalDate.MAX, LocalDate.MAX, "0.00", "Waiting", Boolean.FALSE, contractName);
         }
 
@@ -57,16 +59,16 @@ public class Contract extends HttpServlet {
             status = "Waiting";
         }
         request.setAttribute("status", status);
-       
-            
-            int vid = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
+
+        int vid = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
+        if(request.getParameter("vehicleID")==null||vid!=-1) {
             Vehicle v = dao.getVehicleById(vid);
-            request.setAttribute("vehicle", v);
-            String oid = request.getParameter("orderID");
-            if(oid!=null){
-                int orderID = Integer.parseInt(oid);
-                RentalOrder ro = dao.getRentalOrderById(orderID);
-                request.setAttribute("ro", ro);
+        request.setAttribute("vehicle", v);
+        String oid = request.getParameter("orderID");
+        if (oid != null) {
+            int orderID = Integer.parseInt(oid);
+            RentalOrder ro = dao.getRentalOrderById(orderID);
+            request.setAttribute("ro", ro);
             if (action.equalsIgnoreCase("Delete")) {
                 dao.deleteRentalOrder(customerID, orderID);
             }
@@ -74,29 +76,44 @@ public class Contract extends HttpServlet {
                 request.getRequestDispatcher("viewContract").forward(request, response);
             }
             if (action.equalsIgnoreCase("Add")) {
-                dao.addOrderVehicle(orderID, v.getVehicleId(), ro.getStartDate() , ro.getEndDate());
-                if(ro.getStartDate()!=null&&ro.getEndDate()!=null) {
-                    boolean check = true;
-                    if(ro.getDepositPaid()==0) check =false;
-                    Double total = Double.parseDouble(ro.getTotalAmount())+(-ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate())+1)*v.getPricePerDay();      
-                    dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), check, null);
-                ro = dao.getRentalOrderById(orderID);
-                request.setAttribute("ro", ro);
+                    if (!isVehicleInRentalOrder(ro, vid, dao)) {
+                         boolean check = true;
+                    if (ro.getDepositPaid() == 0) {
+                        check = false;
+                    }
+                         if (ro.getStartDate() != null && ro.getEndDate() != null) {
+                   
+                        Double total = Double.parseDouble(ro.getTotalAmount()) + (-ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate()) + 1) * v.getPricePerDay();
+                        dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), check, vid);
+                      
+                    }
+                         else{
+                             dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), ro.getTotalAmount(), ro.getStatus(), check, vid);
+                         }
+                           ro = dao.getRentalOrderById(orderID);
+                        request.setAttribute("ro", ro);
                 }
                 request.getRequestDispatcher("viewContract").forward(request, response);
-            }
+            }   
         }
-         List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(customerID, status);
+        }
+        else{
+             response.sendRedirect("home");
+       
+        }
+        List<RentalOrder> list = dao.getAllContractOfCustomerByStatus(customerID, status);
         request.setAttribute("list", list);
-        
+
         request.getRequestDispatcher("contracts.jsp").forward(request, response);
-    }
+    
+        }
+    
 
     public static void main(String[] args) throws SQLException {
         DAO dao = new DAO();
         RentalOrder ro = dao.getRentalOrderById(190);
         Double total = Double.valueOf(ro.getTotalAmount());
-        Double total2 = 2000.02*((ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate()))+1);
+        Double total2 = 2000.02 * ((ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate())) + 1);
         System.out.println(String.format("%.2f", total2));
         dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), true, null);
 
@@ -149,7 +166,16 @@ public class Contract extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-       private int vehicleValid(String vehicle,  List<Vehicle> listVehicle) {
+    private boolean isVehicleInRentalOrder(RentalOrder ro, int id, DAO dao) {
+        for (OrderVehicle ov : dao.getAllOrderVehiclesByOrderId(ro.getOrderId())) {
+            if (ov.getVehicleId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int vehicleValid(String vehicle, List<Vehicle> listVehicle) {
         Boolean check = true;
         int id = -1;
         if (vehicle == null) {
@@ -163,7 +189,7 @@ public class Contract extends HttpServlet {
 
             boolean found = false;
             for (Vehicle vehicle1 : listVehicle) {
-                if (vehicle1.getVehicleId() == id) {
+                if (vehicle1.getVehicleId() == id && vehicle1.getStatus().equalsIgnoreCase("available")) {
                     found = true;
                     break;
                 }
@@ -173,9 +199,10 @@ public class Contract extends HttpServlet {
                 check = false;
             }
         }
-        if (check==false) {
+        if (check == false) {
             return -1;
+        } else {
+            return id;
         }
-        else return id;
     }
 }
