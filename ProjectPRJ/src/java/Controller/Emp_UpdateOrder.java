@@ -88,7 +88,7 @@ public class Emp_UpdateOrder extends HttpServlet {
                     
                     Date now = new Date();
                     dao.Emp_updateStartDate(id);
-                    dao.Emp_updateOrderStatus("on+going", id);
+                    dao.Emp_updateOrderStatus("on going", id);
                     response.sendRedirect("Emp_OrderDetail?id=" + id);
                 }
                 else if (update.equalsIgnoreCase("completed")) {

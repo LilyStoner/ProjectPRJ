@@ -87,6 +87,7 @@
                 </thead>
                 <% 
                     String status = (String) request.getAttribute("status");
+                    RentalOrder ro = (RentalOrder) request.getAttribute("ro");
                     double vehiclePricePerDay = 0;
                     List<Vehicle> vlist = (List<Vehicle>) request.getAttribute("vList");
                     for(Vehicle v : vlist) {
@@ -105,7 +106,29 @@
             </table>
                 <%
                  if(status.equalsIgnoreCase("waiting")) {
+                  if(ro.getStartDate()!=null&&ro.getEndDate()!=null){
                 %>
+                  <form action="ContractComplete" method="POST">
+                <div class="form-date">
+                    <div class="date-in">
+                        <label for="pickup_date">Pickup Date:</label>
+                        <input type="date" id="pickup_date" value="${ro.getStartDate()}" name="pickup_date" oninput="validateDates(<%=vehiclePricePerDay%>)"  required>
+                        <br>
+                        <span id="error_pickup" style="color:red"></span>
+                    </div>
+                    <div class="date-in">
+                        <label for="return_date">Return Date:</label>
+                        <input type="date" id="return_date" value="${ro.getEndDate()}" name="return_date" oninput="validateDates(<%=vehiclePricePerDay%>)"  required>
+                        <br>
+                        <span id="error_return" style="color:red"></span>
+                    </div>
+                </div>
+                <label for="total-amount" style="font-size:24px; margin: 0 0 0.2em 0">Total Amount:</label> 
+                <input id="result" type="text" name="total_amount" value="${ro.getTotalAmount()}" readonly="readonly" />
+                <button type="submit" id="submit_btn" name="action" value="submit" >Submit</button>
+                <button type="submit" id="save" name="action" value="save" >Save</button>
+          
+                <%} else {%>
             <form action="ContractComplete" method="POST">
                 <div class="form-date">
                     <div class="date-in">
@@ -123,10 +146,10 @@
                 </div>
                 <label for="total-amount" style="font-size:24px; margin: 0 0 0.2em 0">Total Amount:</label> 
                 <input id="result" type="text" name="total_amount" value="0$" readonly="readonly" />
-                <button type="submit" id="submit_btn" disabled>Submit</button>
-                <button type="submit" id="save" disabled>Save</button>
+                <button type="submit" id="submit_btn" name="action" value="submit" disabled>Submit</button>
+                <button type="submit" id="save" name="action" value="save" disabled>Save</button>
             </form>
-                        <%} else {%>
+                        <%} }else {%>
                          <label for="pickup_date">Pickup Date:</label>
                          <input type="text" name="pickup" value="${ro.getStartDate()}" readonly="readonly" />
                          <label for="return_date">Return Date:</label>
