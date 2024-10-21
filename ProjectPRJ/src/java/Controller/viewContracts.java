@@ -55,8 +55,8 @@ public class viewContracts extends HttpServlet {
                    
                         Double total = Double.parseDouble(ro.getTotalAmount()) - (-ChronoUnit.DAYS.between(ro.getEndDate(), ro.getStartDate()) + 1) * v.getPricePerDay();
                         dao.updateRentalOrder(ro.getOrderId(), ro.getStartDate(), ro.getEndDate(), String.format("%.2f", total), ro.getStatus(), check, null);
-                                      dao.deleteOrderVehicle(vehicleremomve, ro.getOrderId());  
-                    }             
+                    }
+                         dao.deleteOrderVehicle(vehicleremomve, ro.getOrderId());
                 }
         }
         HttpSession session = request.getSession();
