@@ -196,7 +196,7 @@ public class Contract extends HttpServlet {
     try {
         int id = Integer.parseInt(vehicle);
         for (Vehicle v : listVehicle) {
-            if (v.getVehicleId() == id && v.getStatus().equalsIgnoreCase("available")) {
+            if (v.getVehicleId() == id && !v.getStatus().equalsIgnoreCase("maintenance")) {
                 return id;
             }
         }

@@ -71,7 +71,14 @@ public class home extends HttpServlet {
             }
         }
         if (type!=null&&type.equalsIgnoreCase("all")) {
-            Iterator<Vehicle> iterator = listVehicle.iterator();
+ Iterator<Vehicle> iterator = listVehicle.iterator();
+            try {
+                LocalDate pickupDate = LocalDate.parse(pick);
+                LocalDate returnDate = LocalDate.parse(re);
+                listVehicle = dao.listCarCanRentInRange(pickupDate, returnDate);
+                iterator = listVehicle.iterator();
+            } catch (Exception e) {
+            }
             while (iterator.hasNext()) {
                 Vehicle v = iterator.next();
                 if (v.getStatus().equalsIgnoreCase("maintenance")) {

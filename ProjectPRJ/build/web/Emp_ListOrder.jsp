@@ -32,8 +32,6 @@
     </head>
     <body>
         <jsp:include page="includes/header.jsp" />
-                <jsp:include page="includes/menu.jsp" />
-
         <%
             Map<Integer, RentalOrder> listOrders = (Map<Integer, RentalOrder>) request.getAttribute("lo");
             Map<Integer, Customer> listCustomers = (Map<Integer, Customer>) request.getAttribute("lc");
@@ -100,7 +98,7 @@
                             DAO dao = new DAO();
                             List<Vehicle> list = dao.Emp_getVehicleInOrder(oid);
                             for (Vehicle v : list) {
-                                out.println(v.getModel() + "</br>");
+                                out.println(v.getModel() +"("+v.getRegistrationNumber()+")"+ "</br>");
                                 
                             }
                         %>
@@ -145,12 +143,6 @@
             }
         %>
 
-            <!-- Scripts -->
-            <script src="assets/js/jquery.min.js"></script>
-            <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-            <script src="assets/js/jquery.scrolly.min.js"></script>
-            <script src="assets/js/jquery.scrollex.min.js"></script>
-            <script src="assets/js/main.js"></script>
 
 
 
