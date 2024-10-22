@@ -34,8 +34,6 @@
     </head>
     <body>
         <jsp:include page="includes/header.jsp" />
-                <jsp:include page="includes/menu.jsp" />
-
         <%
 
             RentalOrder rentalOrder = (RentalOrder) request.getAttribute("ro");
@@ -49,8 +47,6 @@
                 response.sendRedirect("Emp_ListOrder");
             } else {
                 String status = rentalOrder.getStatus();
-
-
         %>
         <a  href="Emp_ListOrder" style="font-weight: bold;text-decoration: none"><button>Back to order list</button></a>
         <div style="margin-top: 50px">
@@ -98,10 +94,7 @@
                         <th>Registration number</th>
                         <th>Pickup date</th>
                         <th>Return date</th>
-                        <th>price per day</th>
-                            <%if (rentalOrder.getStatus().equalsIgnoreCase("pending")) {
-                                    out.println("<th>status</th>");
-                                }%>
+                        <th>Price per day</th>
                         <th>Status</th>
                         <th>image</th>
                     </tr>
@@ -122,35 +115,35 @@
                         <td><%=orderVehicles.get(v.getVehicleId()).getPickupDate()%></td>
                         <td><%=orderVehicles.get(v.getVehicleId()).getReturnDate()%></td>
                         <td><%=v.getPricePerDay()%></td>
-                        <%if (rentalOrder.getStatus().equalsIgnoreCase("pending")) {%><td><%=v.getStatus()%></td><%}%>
+
                         <td>
                             <%
                                 if (rentalOrder.getStatus().equalsIgnoreCase("on going")) {
                                     if (v.getStatus().equalsIgnoreCase("rented")) {
                             %>
-                            <button onclick="confirmChoice('return vehicle <%=v.getVehicleId()%>',<%=rentalOrder.getOrderId()%>)" style="background-color: #66ccff;color:  white;text-align: center" type="submit" name="up" >Return vehicle</button>
+                            <button onclick="confirmChoice('return vehicle <%=v.getVehicleId()%>',<%=rentalOrder.getOrderId()%>)" style="background-color: #66ccff;color:  white;text-align: center" type="submit" name="up" >Return</button>
                             <%      } else {
                             %>
-                            <button style="background-color: #66ccff;color:  white;text-align: center" type="submit" name="up" >Returned</button>
+                            <p style="background-color: #33cc00;color:  white;text-align: center;font-weight: bold" type="submit" name="up" >Returned</p>
                             <%
                                 }
                             } else if (rentalOrder.getStatus().equalsIgnoreCase("completed")) {
                             %>
-                            <button style="background-color: #33cc00;color:  white;text-align: center" type="submit" name="up" >Returned</button>
+                            <p style="background-color: #33cc00;color:  white;text-align: center;font-weight: bold" type="submit" name="up" >Returned</p>
                             <%
                             } else if (rentalOrder.getStatus().equalsIgnoreCase("cancelled")) {
                             %>
-                            <button style="background-color: #66ccff;text-align: center" type="submit" name="up" >Order cancelled</button>
+                            <p style="background-color: #ff9999;text-align: center;font-weight: bold" type="submit" name="up" >Order cancelled</p>
                             <%
                             } else {
                             %>
                             <%if (err_id.contains(v.getVehicleId())){
                             %>
-                            <button style="background-color: #ff9999;color:  white;text-align: center" type="submit" name="up" >Unavailable</button>
+                            <p style="background-color: #ff9999;color:  white;text-align: center;font-weight: bold"  >Unavailable</p>
                             <%
     }else{
-%>
-                            <button style="background-color: #33cc00;color:  white;text-align: center" type="submit" name="up" >Available</button>
+                            %>
+                            <p style="background-color: #33cc00;color:  white;text-align: center;font-weight: bold"  >Available</p>
                             <%
     }%>
                             <%
@@ -176,9 +169,12 @@
             <button onclick="confirmChoice('deposited',<%=rentalOrder.getOrderId()%>)" style="height: 50px;background-color: #ff9999;color:  white;text-align: center" type="submit" name="up" <%if(!err_id.isEmpty()||rentalOrder.getStatus().equalsIgnoreCase("completed")||rentalOrder.getStatus().equalsIgnoreCase("cancelled")){out.println("disabled");}%>>UPDATE DEPOSIT NOW</button>
             <%
             } else {
-            %>
-            <button <%if(status.equalsIgnoreCase("confirmed")){%>onclick="confirmChoice('undeposited',<%=rentalOrder.getOrderId()%>)"<%}%> style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" name="up" >DEPOSITED</button>
+                if(status.equalsIgnoreCase("confirmed")||status.equalsIgnoreCase("pending")){%>
+            <button  button onclick="confirmChoice('undeposited',<%=rentalOrder.getOrderId()%>)"style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" name="up" >DEPOSITED</button>
             <%
+                }else{
+%><p style="width: 15vw;background-color: #33cc00;color:  white;text-align: center;font-weight: bold" type="submit" name="up" >DEPOSITED</p><%
+}
                 }
 
             %>  
@@ -202,13 +198,13 @@
                 <button onclick="confirmChoice('cancel',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #ff9999;color:  white;text-align: center" type="submit" value="CANCLE" name="up" <%if ((!status.equalsIgnoreCase("pending") && !status.equalsIgnoreCase("confirmed"))|| rentalOrder.getDepositPaid()==1) {
                         out.println("disabled");
                     }%>>CANCEL</button>
-                <button onclick="confirmChoice('confirm',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #ccffcc;color:  white;text-align: center" type="submit" value="CONFIRM" name="up" <%if (err_id.size() > 0 || !status.equalsIgnoreCase("pending")) {
+                <button onclick="confirmChoice('confirm',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" value="CONFIRM" name="up" <%if (err_id.size() > 0 || !status.equalsIgnoreCase("pending")) {
                         out.println("disabled");
                     }%>>CONFIRM</button>
-                <button onclick="confirmChoice('on going',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #ccffcc;color:  white;text-align: center" type="submit" value="ON GOING" name="up" <%if (err.size() > 0 ||!status.equalsIgnoreCase("confirmed")) {
+                <button onclick="confirmChoice('on going',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" value="ON GOING" name="up" <%if (err.size() > 0 ||!status.equalsIgnoreCase("confirmed")) {
                         out.println("disabled");
                     }%>>ON GOING</button>
-                <button onclick="confirmChoice('completed',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #ccffcc;color:  white;text-align: center" type="submit" value="COMPLETED" name="up" <%if (!status.equalsIgnoreCase("on going")||err_id.size() > 0) {
+                <button onclick="confirmChoice('completed',<%=rentalOrder.getOrderId()%>)" style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" value="COMPLETED" name="up" <%if (!status.equalsIgnoreCase("on going")||err_id.size() > 0) {
                         out.println("disabled");
                     }%>>COMPLETE</button>
             </div>
@@ -220,13 +216,5 @@
                 }
             %>
         </div>
-        
-            <!-- Scripts -->
-            <script src="assets/js/jquery.min.js"></script>
-            <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-            <script src="assets/js/jquery.scrolly.min.js"></script>
-            <script src="assets/js/jquery.scrollex.min.js"></script>
-            <script src="assets/js/main.js"></script>
-
     </body>
 </html>

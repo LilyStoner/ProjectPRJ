@@ -293,11 +293,9 @@ public class DAO extends DBContext{
           String SQL = "DELETE FROM OrderVehicle WHERE vehicle_id = ? AND order_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(SQL)) {
              
-            // Gán giá trị vào câu lệnh SQL
             statement.setInt(1, vehicleId);
             statement.setInt(2, orderId);
             
-            // Thực thi câu lệnh
             int rowsDeleted = statement.executeUpdate();
             if (rowsDeleted>0) {
                 System.out.println("Good");
@@ -435,8 +433,7 @@ public class DAO extends DBContext{
     //check cac thu cac thu
 
      
-     
-    
+
     public Map<Integer, RentalOrder> Emp_getListOrders() {
         Map<Integer, RentalOrder> list = new HashMap<>();
         try {
@@ -530,17 +527,17 @@ public class DAO extends DBContext{
                 OrderVehicle ov = new OrderVehicle();
                 ov.setOrderId(order_id);
                 ov.setOrderVehicleId(rs.getInt("order_vehicle_id"));
-                try{
-                ov.setPickupDate(LocalDate.parse(rs.getString("pickup_date")));
-                }catch(Exception e){
+                try {
+                    ov.setPickupDate(rs.getDate("pickup_date").toLocalDate());
+                } catch (Exception e) {
                     ov.setPickupDate(null);
                 }
-                try{
-                ov.setReturnDate(LocalDate.parse(rs.getString("return_date")));
-                }catch(Exception e){
+                try {
+                    ov.setReturnDate(rs.getDate("return_date").toLocalDate());
+                } catch (Exception e) {
                     ov.setReturnDate(null);
                 }
-                ov.setVehicleId(rs.getInt("vehicle_id"));
+                    ov.setVehicleId(rs.getInt("vehicle_id"));
                 list.put(ov.getVehicleId(), ov);
             }
             st.close();
@@ -550,7 +547,7 @@ public class DAO extends DBContext{
         }
         return list;
     }
-    
+
     public void Emp_updateOrderTotal(double total, int order_id) {
         String sql = """
                  update RentalOrder
@@ -566,7 +563,7 @@ public class DAO extends DBContext{
         }
 
     }
-    
+
     public void Emp_updateOrderStatus(String status, int order_id) {
         String sql = """
                  Update RentalOrder
@@ -599,7 +596,7 @@ public class DAO extends DBContext{
 
     }
 
-    public void Emp_updateDeposit(int order_id,int x) {
+    public void Emp_updateDeposit(int order_id, int x) {
         String sql = """
                  Update RentalOrder
                  set deposit_paid=?
@@ -629,8 +626,8 @@ public class DAO extends DBContext{
         }
 
     }
-    
-    public void Emp_updatePickupDate(int vehicle_id,int order_id) {
+
+    public void Emp_updatePickupDate(int vehicle_id, int order_id) {
         String sql = """
                  update OrderVehicle
                  set pickup_date = GETDATE()
@@ -645,8 +642,8 @@ public class DAO extends DBContext{
         }
 
     }
-    
-    public void Emp_updateReturnDate(int vehicle_id,int order_id) {
+
+    public void Emp_updateReturnDate(int vehicle_id, int order_id) {
         String sql = """
                  update OrderVehicle
                  set return_date = GETDATE()
@@ -662,7 +659,7 @@ public class DAO extends DBContext{
 
     }
 
-   public int Emp_checkConfirm(int order_id, int vehicle_id) {
+    public int Emp_checkConfirm(int order_id, int vehicle_id) {
         int r = -1;
         try {
             String sql = "DECLARE @pick Date, @return Date, @v_id int, @o_id int\n"
@@ -687,11 +684,12 @@ public class DAO extends DBContext{
             }
             st.close();
             rs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return r;
     }
+
 
 
  

@@ -32,6 +32,8 @@ import model.Vehicle;
  */
 @WebServlet(name = "Emp_UpdateOrder", urlPatterns = {"/Emp_UpdateOrder"})
 public class Emp_UpdateOrder extends HttpServlet {
+    int i=0;
+    String NamXanl = "";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -68,6 +70,7 @@ public class Emp_UpdateOrder extends HttpServlet {
                     update=update.split(" ")[0];
                 }
                 
+                
                 List<Vehicle> listVehicles = dao.Emp_getVehicleInOrder(id);
                 if (update.equalsIgnoreCase("cancel")) {
                     dao.Emp_updateOrderStatus("cancelled", id);
@@ -102,13 +105,19 @@ public class Emp_UpdateOrder extends HttpServlet {
                     dao.Emp_updateReturnDate(vehicle_id,id);
                     double total=0;
                     boolean check = true;
+                    listVehicles=dao.Emp_getVehicleInOrder(id);
                     for(Vehicle v:listVehicles){
                         if(v.getStatus().equalsIgnoreCase("rented")){
                             check = false;
+                            break;
                         }
-                        total += (total+=ChronoUnit.DAYS.between(listOrders.get(id).getStartDate(), dao.Emp_getOrderVehicles(id).get(v.getVehicleId()).getReturnDate())+1)*v.getPricePerDay(); 
+                        RentalOrder ro = dao.Emp_getListOrders().get(id);
+                        OrderVehicle ov = dao.Emp_getOrderVehicles(id).get(v.getVehicleId());
+                        total += (ChronoUnit.DAYS.between(ro.getStartDate(),ov.getReturnDate() )+1)*v.getPricePerDay(); 
                     }
-                    dao.Emp_updateOrderTotal(total, id);
+                    if(check){
+                        dao.Emp_updateOrderTotal(total, id);
+                    }
                     response.sendRedirect("Emp_OrderDetail?id=" + id);
                 }
                 else {

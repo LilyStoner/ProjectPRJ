@@ -66,7 +66,6 @@ public class Emp_OrderDetail extends HttpServlet {
                 if (!check) {
                     throw new Exception();
                 }
-
                 RentalOrder ro = listOrders.get(order_id);
                 List<Vehicle> lv = dao.Emp_getVehicleInOrder(order_id);
 
