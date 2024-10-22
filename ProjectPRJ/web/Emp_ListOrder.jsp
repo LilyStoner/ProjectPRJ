@@ -63,6 +63,9 @@
                     <th>Order</th>
                     <th>Customer</th>
                     <th>Vehicles</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Total</th>
                     <th>Status</th>
                     <th>Update</th>
                 </tr>
@@ -96,14 +99,30 @@
                             List<Vehicle> list = dao.Emp_getVehicleInOrder(oid);
                             for (Vehicle v : list) {
                                 out.println(v.getModel() + "</br>");
+                                
                             }
                         %>
                     </td>
+                        
+                    <td>
+                        <%=ro.getStartDate()%>
+                    </td>
+                        
+                    <td>
+                        <%=ro.getEndDate()%>
+                    </td>
+                    
+                    <td>
+                        <%=ro.getTotalAmount()%>
+                    </td>
+                    
+                    
+                    
                     <td>
                         <%=ro.getStatus()%>
                     </td>
                     <td>
-                        <a href="Emp_OrderDetail?id=<%=oid%>" >Show detail</a>
+                        <a href="Emp_OrderDetail?id=<%=oid%>" style="text-decoration: none"><button>Show detail</button></a>
                     </td>
                 </tr>
                 <%

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import model.Customer;
+import model.OrderVehicle;
 import model.RentalOrder;
 
 /**
@@ -46,6 +47,7 @@ public class Emp_ListOrder extends HttpServlet {
             Map<Integer, Customer> listCustomers = dao.Emp_getListCustomers();
             request.setAttribute("lo", listOrders);
             request.setAttribute("lc", listCustomers);
+            request.setAttribute(LEGACY_DO_HEAD, dao);
             
             request.getRequestDispatcher("Emp_ListOrder.jsp").forward(request, response);
         }

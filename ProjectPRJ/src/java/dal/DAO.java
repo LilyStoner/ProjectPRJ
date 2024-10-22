@@ -405,11 +405,12 @@ public class DAO extends DBContext{
 
      
      
+    
     public Map<Integer, RentalOrder> Emp_getListOrders() {
         Map<Integer, RentalOrder> list = new HashMap<>();
         try {
             String sql = "select* from RentalOrder \n"
-                    + "where status != 'waiting'\n"
+                    + "where [status] != 'waiting'\n"
                     + "order by created_at desc";
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -432,7 +433,7 @@ public class DAO extends DBContext{
         }
         return list;
     }
- 
+
     public Map<Integer, Customer> Emp_getListCustomers() {
         Map<Integer, Customer> list = new HashMap<>();
         try {
@@ -498,8 +499,16 @@ public class DAO extends DBContext{
                 OrderVehicle ov = new OrderVehicle();
                 ov.setOrderId(order_id);
                 ov.setOrderVehicleId(rs.getInt("order_vehicle_id"));
+                try{
                 ov.setPickupDate(LocalDate.parse(rs.getString("pickup_date")));
+                }catch(Exception e){
+                    ov.setPickupDate(null);
+                }
+                try{
                 ov.setReturnDate(LocalDate.parse(rs.getString("return_date")));
+                }catch(Exception e){
+                    ov.setPickupDate(null);
+                }
                 ov.setVehicleId(rs.getInt("vehicle_id"));
                 list.put(ov.getVehicleId(), ov);
             }
@@ -510,11 +519,27 @@ public class DAO extends DBContext{
         }
         return list;
     }
+    
+    public void Emp_updateOrderTotal(double total, int order_id) {
+        String sql = """
+                 update RentalOrder
+                 set total_amount = ?
+                 where order_id = ?
+                 """;
 
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setDouble(1, total);
+            pstmt.setInt(2, order_id);
+            int rowsUpdated = pstmt.executeUpdate();
+        } catch (SQLException e) {
+        }
+
+    }
+    
     public void Emp_updateOrderStatus(String status, int order_id) {
         String sql = """
                  Update RentalOrder
-                 set status = ?
+                 set [status] = ?
                  where order_id = ?
                  """;
 
@@ -543,15 +568,16 @@ public class DAO extends DBContext{
 
     }
 
-    public void Emp_updateStartDate(int order_id) {
+    public void Emp_updateDeposit(int order_id,int x) {
         String sql = """
                  Update RentalOrder
-                 set start_date = GETDATE(),deposit_paid=1
+                 set deposit_paid=?
                  where order_id = ?
                  """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, order_id);
+            pstmt.setInt(1, x);
+            pstmt.setInt(2, order_id);
             int rowsUpdated = pstmt.executeUpdate();
         } catch (SQLException e) {
         }
@@ -572,6 +598,39 @@ public class DAO extends DBContext{
         }
 
     }
+    
+    public void Emp_updatePickupDate(int vehicle_id,int order_id) {
+        String sql = """
+                 update OrderVehicle
+                 set pickup_date = GETDATE()
+                 where vehicle_id = ?
+                     and order_id =?""";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, vehicle_id);
+            pstmt.setInt(2, order_id);
+            int rowsUpdated = pstmt.executeUpdate();
+        } catch (SQLException e) {
+        }
+
+    }
+    
+    public void Emp_updateReturnDate(int vehicle_id,int order_id) {
+        String sql = """
+                 update OrderVehicle
+                 set return_date = GETDATE()
+                 where vehicle_id = ?
+                     and order_id =?""";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, vehicle_id);
+            pstmt.setInt(2, order_id);
+            int rowsUpdated = pstmt.executeUpdate();
+        } catch (SQLException e) {
+        }
+
+    }
+
     public int Emp_checkConfirm(int order_id, int vehicle_id) {
         int r = -1;
         try {
@@ -579,13 +638,13 @@ public class DAO extends DBContext{
                     + "set @v_id = "+vehicle_id+"\n"
                     + "set @o_id = "+order_id+"\n"
                     + "\n"
-                    + "select @pick = o.pickup_date,@return = o.return_date from OrderVehicle o join RentalOrder r\n"
+                    + "select @pick = [start_date],@return = [end_date] from RentalOrder\n"
                     + "on o.order_id = r.order_id\n"
                     + "where o.vehicle_id = @v_id\n"
                     + "\n"
                     + "select r.order_id from OrderVehicle o join RentalOrder r\n"
                     + "on o.order_id = r.order_id\n"
-                    + "where r.status = N'confirmed' \n"
+                    + "where r.status in (N'confirmed',N'on going') \n"
                     + "	and (@return between o.pickup_date and o.return_date or @pick between o.pickup_date and o.return_date or o.pickup_date between @pick and @return or o.return_date between @pick and @return)\n"
                     + "	and o.vehicle_id = @v_id\n"
                     + "	and r.order_id != @o_id";
@@ -601,7 +660,8 @@ public class DAO extends DBContext{
         }
         return r;
     }
-  
+
+
  
     
     public static void main(String[] args) {

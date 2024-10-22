@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import model.Vehicle;
  */
 @WebServlet(name = "Emp_UpdateOrder", urlPatterns = {"/Emp_UpdateOrder"})
 public class Emp_UpdateOrder extends HttpServlet {
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,63 +48,74 @@ public class Emp_UpdateOrder extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
             DAO dao = new DAO();
             Map<Integer, RentalOrder> listOrders = dao.Emp_getListOrders();
-
-            String update = request.getParameter("up");
+            List<String> err = (List<String>)request.getAttribute("err");
+            List<Integer> err_id = (List<Integer>)request.getAttribute("err_id");
+            
+            
+            String update = (String)request.getAttribute("up");
             HttpSession session = request.getSession();
-            Boolean ok = (Boolean) request.getAttribute("ok");
-            if (ok == null) {
-                ok = false;
-            }
-
+            
             try {
-                int id = (Integer) session.getAttribute("id");
+                int id = (Integer) request.getAttribute("id");
+                if(update==null){
+                    throw new Exception();
+                }
+                int vehicle_id = 0;
+                
+                if(listOrders.get(id).getStatus().equalsIgnoreCase("on going")&&!err.isEmpty()&&update.contains("return")){
+                    
+                    vehicle_id = Integer.parseInt(update.split(" ")[2]);
+                    update=update.split(" ")[0];
+                }
+                
                 List<Vehicle> listVehicles = dao.Emp_getVehicleInOrder(id);
-                if (update.equalsIgnoreCase("cancle")) {
-                    if (listOrders.get(id).getStatus().equalsIgnoreCase("confirmed")) {
-                        for (Vehicle v : listVehicles) {
-                            dao.Emp_updateVehicleStatus("Available", v.getVehicleId());
-                        }
-                    }
+                if (update.equalsIgnoreCase("cancel")) {
                     dao.Emp_updateOrderStatus("cancelled", id);
                     response.sendRedirect("Emp_OrderDetail?id=" + id);
-                }
-                else if (update.equalsIgnoreCase("confirm")) {
-                    if (ok) {
+                } else if (update.equalsIgnoreCase("confirm")) {
+                        if(err_id.size()>0){
+                            response.sendRedirect("Emp_OrderDetail?id="+id);
+                        }else{
                         dao.Emp_updateOrderStatus("confirmed", id);
-                        for (Vehicle v : listVehicles) {
-                            dao.Emp_updateVehicleStatus("rented", v.getVehicleId());
-                        }
                         response.sendRedirect("Emp_OrderDetail?id=" + id);
-                    } else {
-                        Boolean reload = true;
-                        request.setAttribute("reload", reload);
-                        request.getRequestDispatcher("Emp_OrderDetail?id=" + id).forward(request, response);
-                    }
-                }
-                else if (update.equalsIgnoreCase("on going")) {
+                        }
+                } else if (update.equalsIgnoreCase("on going")) {
                     for (Vehicle v : listVehicles) {
-                            dao.Emp_updateVehicleStatus("rented", v.getVehicleId());
+                        dao.Emp_updateVehicleStatus("rented", v.getVehicleId());
+                        dao.Emp_updatePickupDate(v.getVehicleId(),id);
                     }
-                    
-                    Date now = new Date();
-                    dao.Emp_updateStartDate(id);
                     dao.Emp_updateOrderStatus("on going", id);
                     response.sendRedirect("Emp_OrderDetail?id=" + id);
-                }
-                else if (update.equalsIgnoreCase("completed")) {
-                    for (Vehicle v : listVehicles) {
-                            dao.Emp_updateVehicleStatus("Available", v.getVehicleId());
-                    }
-                    dao.Emp_updateEndDate(id);
+                } else if (update.equalsIgnoreCase("completed")) {
                     dao.Emp_updateOrderStatus("completed", id);
                     response.sendRedirect("Emp_OrderDetail?id=" + id);
+                }else if(update.equalsIgnoreCase("deposited")&&!listOrders.get(id).getStatus().equalsIgnoreCase("completed")&&!listOrders.get(id).getStatus().equalsIgnoreCase("cancelled")){
+                    dao.Emp_updateDeposit(id,1);
+                    response.sendRedirect("Emp_OrderDetail?id=" + id);
+                }else if(update.equalsIgnoreCase("undeposited")&&listOrders.get(id).getStatus().equalsIgnoreCase("confirmed")){
+                    dao.Emp_updateDeposit(id,0);
+                    response.sendRedirect("Emp_OrderDetail?id=" + id);
+                }else if(update.equalsIgnoreCase("return")){
                     
+                    dao.Emp_updateVehicleStatus("available", vehicle_id);
+                    
+                    dao.Emp_updateReturnDate(vehicle_id,id);
+                    double total=0;
+                    boolean check = true;
+                    for(Vehicle v:listVehicles){
+                        if(v.getStatus().equalsIgnoreCase("rented")){
+                            check = false;
+                        }
+                        total += (total+=ChronoUnit.DAYS.between(listOrders.get(id).getStartDate(), dao.Emp_getOrderVehicles(id).get(v.getVehicleId()).getReturnDate())+1)*v.getPricePerDay(); 
+                    }
+                    dao.Emp_updateOrderTotal(total, id);
+                    response.sendRedirect("Emp_OrderDetail?id=" + id);
                 }
-                else{
-                response.sendRedirect("Emp_OrderDetail?id=" + id);
+                else {
+                    response.sendRedirect("Emp_OrderDetail?id=" + id);
                 }
             } catch (Exception e) {
-                //response.sendRedirect("Emp_ListOrder");
+                response.sendRedirect("Emp_ListOrder");
             }
         }
     }
