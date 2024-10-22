@@ -6,6 +6,8 @@
             <file>file:/D:/Project/ProjectPRJ/web/rental.jsp</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Emp_UpdateOrder.java</file>
             <file>file:/D:/Project/ProjectPRJ/web/Emp_ListOrder.jsp</file>
+            <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Order.java</file>
+            <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Contract.java</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/ContractComplete.java</file>
             <file>file:/D:/Project/ProjectPRJ/web/order.jsp</file>
             <file>file:/D:/Project/ProjectPRJ/web/order_complete.jsp</file>
@@ -15,11 +17,12 @@
             <file>file:/D:/Project/ProjectPRJ/src/java/dal/DAO.java</file>
             <file>file:/D:/Project/ProjectPRJ/web/Emp_OrderDetail.jsp</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/home.java</file>
+            <file>file:/D:/Project/ProjectPRJ/src/java/model/Vehicle.java</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Emp_ListOrder.java</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/viewContracts.java</file>
             <file>file:/D:/Project/ProjectPRJ/web/contract_complete.jsp</file>
+            <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Emp_OrderDetail.java</file>
             <file>file:/D:/Project/ProjectPRJ/src/java/Controller/Rental.java</file>
-            <file>file:/D:/Project/ProjectPRJ/web/home.jsp</file>
         </group>
     </open-files>
 </project-private>

@@ -131,6 +131,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <c:if test="${list.isEmpty()}">
+                                <%
+                                  String status1=status.toLowerCase();
+                                %>
+                        <h1 style="text-align:center">You don't have any <%=status1%> contracts</h1>
+                            </c:if>                              
                             <c:forEach var="order" items="${list}">
                                 <tr>
                                     <td>${order.getName()}</td>
