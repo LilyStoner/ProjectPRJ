@@ -220,7 +220,11 @@ if (listVehicle == null || listVehicle.isEmpty()) {
                                             <span class="image">
                                                 <img src="<%= listVehicle.get(i).getImage() %>" alt="" />
                                             </span>
+                                             <%if (returnDate==null||pickupDate==null) {%>    
                                             <a href="Rental?vehicleId=<%= listVehicle.get(i).getVehicleId() %>">
+                                          <%}%>     
+                                          <%if (returnDate!=null && pickupDate!=null) {%>     <a href="Rental?vehicleId=<%= listVehicle.get(i).getVehicleId() %>&return_date=<%=returnDate%>&pickup_date=<%=pickupDate%>">
+                                          <%}%>  
                                                 <h2><%= listVehicle.get(i).getBrand() %>-<%= listVehicle.get(i).getModel() %></h2>
                                                 <h2><%= listVehicle.get(i).getVehicleType() %></h2>
                                                 <p>Price from: <strong> $<%= listVehicle.get(i).getPricePerDay() %> </strong> per weekend</p>

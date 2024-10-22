@@ -118,7 +118,7 @@ public class Order extends HttpServlet {
 
             boolean found = false;
             for (Vehicle vehicle1 : listVehicle) {
-                if (vehicle1.getVehicleId() == id && vehicle1.getStatus().equalsIgnoreCase("available")) {
+                if (vehicle1.getVehicleId() == id && !vehicle1.getStatus().equalsIgnoreCase("maintenance")) {
                     found = true;
                     break;
                 }

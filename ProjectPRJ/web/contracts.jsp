@@ -83,6 +83,7 @@
                     <button  onclick="filterOrders('Waiting')">Waiting</button>
                     <button  onclick="filterOrders('Pending')">Pending</button>
                     <button  onclick="filterOrders('Confirmed')">Confirmed</button>
+                    <button  onclick="filterOrders('On Going')">On Going</button>
                     <button  onclick="filterOrders('Cancelled')">Cancelled</button>
                     <button  onclick="filterOrders('Completed')">Completed</button>
 

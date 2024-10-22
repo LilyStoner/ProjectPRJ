@@ -401,6 +401,37 @@ public class DAO extends DBContext{
          }
          return false;   
     }
+     public List<Vehicle> listCarCanRentInRange(LocalDate pickDate, LocalDate returDate) {
+         List<Vehicle> list = new ArrayList<>();
+         try {
+            String sql = "DECLARE @pick DATE, @return DATE\n" +
+"SET @pick = '"+pickDate+"'                \n" +
+"SET @return = '"+returDate+"'\n" +
+"\n" +
+"select * from Vehicle\n" +
+"where vehicle_id not in (\n" +
+"SELECT Distinct v.vehicle_id\n" +
+"FROM Vehicle v \n" +
+"JOIN OrderVehicle ov ON v.vehicle_id = ov.vehicle_id\n" +
+"JOIN RentalOrder r ON r.order_id = ov.order_id\n" +
+"where (r.status = N'on going' or r.status = N'confirmed') \n" +
+"	and ((@return between r.[start_date] and r.end_date) \n" +
+"	or (@pick between r.[start_date] and r.end_date)\n" +
+"		or (r.[start_date] between @pick and @return) \n" +
+"		or (r.end_date between @pick and @return)))";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+               int r = rs.getInt(1);
+               list.add(getVehicleById(r));
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
     //check cac thu cac thu
 
      
@@ -507,7 +538,7 @@ public class DAO extends DBContext{
                 try{
                 ov.setReturnDate(LocalDate.parse(rs.getString("return_date")));
                 }catch(Exception e){
-                    ov.setPickupDate(null);
+                    ov.setReturnDate(null);
                 }
                 ov.setVehicleId(rs.getInt("vehicle_id"));
                 list.put(ov.getVehicleId(), ov);
@@ -631,27 +662,28 @@ public class DAO extends DBContext{
 
     }
 
-    public int Emp_checkConfirm(int order_id, int vehicle_id) {
+   public int Emp_checkConfirm(int order_id, int vehicle_id) {
         int r = -1;
         try {
             String sql = "DECLARE @pick Date, @return Date, @v_id int, @o_id int\n"
-                    + "set @v_id = "+vehicle_id+"\n"
-                    + "set @o_id = "+order_id+"\n"
+                    + "set @v_id =                      \n"+vehicle_id
+                    + "set @o_id = \n"+order_id
                     + "\n"
                     + "select @pick = [start_date],@return = [end_date] from RentalOrder\n"
-                    + "on o.order_id = r.order_id\n"
-                    + "where o.vehicle_id = @v_id\n"
-                    + "\n"
+                    + "where order_id = @o_id\n"
                     + "select r.order_id from OrderVehicle o join RentalOrder r\n"
                     + "on o.order_id = r.order_id\n"
-                    + "where r.status in (N'confirmed',N'on going') \n"
-                    + "	and (@return between o.pickup_date and o.return_date or @pick between o.pickup_date and o.return_date or o.pickup_date between @pick and @return or o.return_date between @pick and @return)\n"
+                    + "where (r.status = N'on going' or r.status = N'confirmed') \n"
+                    + "	and ((@return between r.[start_date] and r.end_date) \n"
+                    + "	or (@pick between r.[start_date] and r.end_date)\n"
+                    + "		or (r.[start_date] between @pick and @return) \n"
+                    + "		or (r.end_date between @pick and @return))\n"
                     + "	and o.vehicle_id = @v_id\n"
                     + "	and r.order_id != @o_id";
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                r=rs.getInt(1);
+                r = rs.getInt(1);
             }
             st.close();
             rs.close();

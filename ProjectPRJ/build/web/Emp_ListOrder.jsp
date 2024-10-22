@@ -32,6 +32,8 @@
     </head>
     <body>
         <jsp:include page="includes/header.jsp" />
+                <jsp:include page="includes/menu.jsp" />
+
         <%
             Map<Integer, RentalOrder> listOrders = (Map<Integer, RentalOrder>) request.getAttribute("lo");
             Map<Integer, Customer> listCustomers = (Map<Integer, Customer>) request.getAttribute("lc");
@@ -63,6 +65,9 @@
                     <th>Order</th>
                     <th>Customer</th>
                     <th>Vehicles</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Total</th>
                     <th>Status</th>
                     <th>Update</th>
                 </tr>
@@ -96,14 +101,30 @@
                             List<Vehicle> list = dao.Emp_getVehicleInOrder(oid);
                             for (Vehicle v : list) {
                                 out.println(v.getModel() + "</br>");
+                                
                             }
                         %>
                     </td>
+                        
+                    <td>
+                        <%=ro.getStartDate()%>
+                    </td>
+                        
+                    <td>
+                        <%=ro.getEndDate()%>
+                    </td>
+                    
+                    <td>
+                        <%=ro.getTotalAmount()%>
+                    </td>
+                    
+                    
+                    
                     <td>
                         <%=ro.getStatus()%>
                     </td>
                     <td>
-                        <a href="Emp_OrderDetail?id=<%=oid%>" >Show detail</a>
+                        <a href="Emp_OrderDetail?id=<%=oid%>" style="text-decoration: none"><button>Show detail</button></a>
                     </td>
                 </tr>
                 <%
@@ -124,6 +145,12 @@
             }
         %>
 
+            <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/main.js"></script>
 
 
 

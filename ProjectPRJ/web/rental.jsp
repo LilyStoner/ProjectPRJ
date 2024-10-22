@@ -67,7 +67,10 @@
             <!-- Menu -->
             <jsp:include page="includes/menu.jsp" />
 
-
+            <%
+                                           String returnDate = request.getParameter("return_date");
+                                           String pickupDate = request.getParameter("pickup_date");
+            %>
             <!-- Main -->
             <div id="main">
                 <div class="inner">
@@ -108,15 +111,21 @@
                         <div class="vehicle-image">
                             <img src="${vehicle.getImage()}" alt="Hình ảnh xe">
                             <br>
-                        
-                            <c:if test="${vehicle.status eq 'available' || vehicle.status eq 'Available' }">
+
+                            <c:if test="${vehicle.status ne 'maintenance' && vehicle.status ne 'Maintenance' }">
                                 <input type="button" value="Add To Contract" name="Contract" onclick="window.location.href = 'Contract?vehicleID=${vehicle.getVehicleId()}'"/>
+                                <%if (returnDate!= null && pickupDate!=null){%> 
+                                <input type="button" value="Rent Now" name="Rent" onclick="window.location.href = 'order?vehicleID=${vehicle.getVehicleId()}&return_date=<%=returnDate%>&pickup_date=<%=pickupDate%>'" />
+
+                                <%} else {%>
                                 <input type="button" value="Rent Now" name="Rent" onclick="window.location.href = 'order?vehicleID=${vehicle.getVehicleId()}'" />
+
+                                <%}%>
                             </c:if>
-                            <c:if test="${vehicle.status ne 'available' && vehicle.status ne 'Available'}">
+                            <c:if test="${vehicle.status eq 'maintenance' || vehicle.status eq 'Maintenance'}">
                                 <h1>This car not available now!</h1>
                             </c:if>
-                                
+
                         </div>
 
                     </div>
