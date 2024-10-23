@@ -53,7 +53,7 @@
             <option value="all" <%if(status.equalsIgnoreCase("all")){out.println("selected");}%>>All</option>
             <option value="pending" <%if(status.equalsIgnoreCase("pending")){out.println("selected");}%>>Pending</option>
             <option value="confirmed" <%if(status.equalsIgnoreCase("confirmed")){out.println("selected");}%>>Confirmed</option>
-            <option value="cancelled" <%if(status.equalsIgnoreCase("cancled")){out.println("selected");}%>>Cancled</option>
+            <option value="cancelled" <%if(status.equalsIgnoreCase("cancelled")){out.println("selected");}%>>cancelled</option>
             <option value="on going" <%if(status.equalsIgnoreCase("on going")){out.println("selected");}%>>On Going</option>
             <option value="completed" <%if(status.equalsIgnoreCase("completed")){out.println("selected");}%>>Completed</option>
         </select>
