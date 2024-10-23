@@ -1,4 +1,4 @@
-//khong them linh tinh
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -173,7 +173,7 @@ public class DAO extends DBContext{
 
     
     /**
-     *
+     * mot hai ba bon
      * @param customerId
      * @param startDate
      * @param endDate
