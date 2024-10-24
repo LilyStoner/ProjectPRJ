@@ -24,8 +24,9 @@
         <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
         <script>
             function redirectToPage() {
-                var selectedValue = document.getElementById("status").value;
-                window.location.href = "Emp_ListOrder?status=" + selectedValue;
+                var selectedStatus = document.getElementById("status").value;
+                var selectedDep = document.getElementById("depo").value;
+                window.location.href = "Emp_ListOrder?status=" + selectedStatus + "&&depo=" + selectedDep;
             }
         </script>
 
@@ -35,7 +36,8 @@
         <%
             Map<Integer, RentalOrder> listOrders = (Map<Integer, RentalOrder>) request.getAttribute("lo");
             Map<Integer, Customer> listCustomers = (Map<Integer, Customer>) request.getAttribute("lc");
-
+            List<Integer> orderBy = (List<Integer>) request.getAttribute("orderBy");
+            
             String status = request.getParameter("status");
             if (status == null) {
                 status = "all";
@@ -43,20 +45,55 @@
             if (!status.equalsIgnoreCase("pending") && !status.equalsIgnoreCase("confirmed") && !status.equalsIgnoreCase("cancelled") && !status.equalsIgnoreCase("on going") && !status.equalsIgnoreCase("completed")) {
                 status = "all";
             }
-
+            String depo = request.getParameter("depo");
+            
+            int checkDepo=2;
+            if (depo == null) {
+                depo = "all";
+                checkDepo = 2;
+            }
+            if (!depo.equalsIgnoreCase("deposited") && !depo.equalsIgnoreCase("undeposited")) {
+                depo = "all";
+                checkDepo = 2;
+            }else{
+                if(depo.equalsIgnoreCase("deposited")){
+                    checkDepo=1;
+                }else{
+                    checkDepo=0;
+                }
+            }
+            
             if (listOrders == null) {
                 response.sendRedirect("Emp_ListOrder");
             } else {
 
-        %>
-        <select id = "status" name="status"  onchange="redirectToPage()">
-            <option value="all" <%if(status.equalsIgnoreCase("all")){out.println("selected");}%>>All</option>
-            <option value="pending" <%if(status.equalsIgnoreCase("pending")){out.println("selected");}%>>Pending</option>
-            <option value="confirmed" <%if(status.equalsIgnoreCase("confirmed")){out.println("selected");}%>>Confirmed</option>
-            <option value="cancelled" <%if(status.equalsIgnoreCase("cancelled")){out.println("selected");}%>>cancelled</option>
-            <option value="on going" <%if(status.equalsIgnoreCase("on going")){out.println("selected");}%>>On Going</option>
-            <option value="completed" <%if(status.equalsIgnoreCase("completed")){out.println("selected");}%>>Completed</option>
-        </select>
+        %><table border="1">
+            <tbody>
+                <tr>
+                    <td>
+
+
+                        <select style="font-weight: bold" id = "status" name="status"  onchange="redirectToPage()">
+                            <option value="all" <%if(status.equalsIgnoreCase("all")){out.println("selected");}%>>All</option>
+                            <option value="pending" <%if(status.equalsIgnoreCase("pending")){out.println("selected");}%>>Pending</option>
+                            <option value="confirmed" <%if(status.equalsIgnoreCase("confirmed")){out.println("selected");}%>>Confirmed</option>
+                            <option value="cancelled" <%if(status.equalsIgnoreCase("cancelled")){out.println("selected");}%>>cancelled</option>
+                            <option value="on going" <%if(status.equalsIgnoreCase("on going")){out.println("selected");}%>>On Going</option>
+                            <option value="completed" <%if(status.equalsIgnoreCase("completed")){out.println("selected");}%>>Completed</option>
+                        </select>
+
+                    </td>
+                    <td>
+                        <select style="font-weight: bold" id = "depo" name="status"  onchange="redirectToPage()">
+                            <option value="all" <%if(depo.equalsIgnoreCase("all")){out.println("selected");}%>>All</option>
+                            <option value="deposited" <%if(depo.equalsIgnoreCase("deposited")){out.println("selected");}%>>Deposited</option>
+                            <option value="undeposited" <%if(depo.equalsIgnoreCase("undeposited")){out.println("selected");}%>>Undeposited</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         <table border="1">
             <thead>
                 <tr>
@@ -74,10 +111,9 @@
 
 
                 <%                    int count = 0;
-                    for (int oid : listOrders.keySet()) {
+                    for (int oid : orderBy) {
                         RentalOrder ro = listOrders.get(oid);
-
-                        if (status.equalsIgnoreCase("all") || listOrders.get(oid).getStatus().equalsIgnoreCase(status)) {
+                        if ((status.equalsIgnoreCase("all") || listOrders.get(oid).getStatus().equalsIgnoreCase(status))&&(checkDepo==2||ro.getDepositPaid()==checkDepo)) {
                 %>
                 <tr>
                     <td>
@@ -99,25 +135,24 @@
                             List<Vehicle> list = dao.Emp_getVehicleInOrder(oid);
                             for (Vehicle v : list) {
                                 out.println(v.getModel() +"("+v.getRegistrationNumber()+")"+ "</br>");
-                                
                             }
                         %>
                     </td>
-                        
+
                     <td>
                         <%=ro.getStartDate()%>
                     </td>
-                        
+
                     <td>
                         <%=ro.getEndDate()%>
                     </td>
-                    
+
                     <td>
                         <%=ro.getTotalAmount()%>
                     </td>
-                    
-                    
-                    
+
+
+
                     <td>
                         <%=ro.getStatus()%>
                     </td>
@@ -133,11 +168,11 @@
                 %>
             </tbody>
         </table>
-            
-            
+
+
         <%  
             if(count==0){
-            %><h2 style="color: red">Rental order <%=status%> list is empty!</h2><%
+        %><h2 style="color: red">Rental order <%=status%> list is empty!</h2><%
             }
             
             }
@@ -146,5 +181,5 @@
 
 
 
-</body>
+    </body>
 </html>

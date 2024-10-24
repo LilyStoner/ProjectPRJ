@@ -690,7 +690,25 @@ public class DAO extends DBContext{
         }
         return r;
     }
-
+    public List<Integer> Emp_getOrderBy(){
+     List<Integer> list = new ArrayList<>();
+        try {
+            String sql ="select order_id from RentalOrder "
+                    + "where status != 'waiting'"
+                    + "order by created_at desc";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next()){
+                int i = rs.getInt(1);
+                list.add(i);
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+     return list;
+    }
 
 
  
