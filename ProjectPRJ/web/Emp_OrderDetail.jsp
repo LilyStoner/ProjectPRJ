@@ -57,11 +57,16 @@
                 End date: <%=rentalOrder.getEndDate()%>
             </div>
             </br>
-            <h2 <%if (status.equalsIgnoreCase("cancelled")) {
-                    out.println("style=\"color: red\"");
-                } else {
-                    out.println("style=\"color: #1c7430\"");
-                }%>>Status: <%=status%></h2>
+            <h2 style="text-align: center;color: white;width: 20vw;background-color: <%if (status.equalsIgnoreCase("cancelled")) {
+                    out.println("red");
+                } else if(status.equalsIgnoreCase("completed")){
+                    out.println("#33cc00");
+                }
+                else{
+                    out.println("#66ccff");
+                }
+            %>"><%=status%></h2>
+                
 
             <h2>CUSTOMER</h2>
             <table border="1">
@@ -96,7 +101,6 @@
                         <th>Return date</th>
                         <th>Price per day</th>
                         <th>Status</th>
-                        <th>image</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,7 +156,6 @@
 
 
                         </td>
-                        <td><img src="v.getImage()" alt="<%=v.getBrand()%> <%=v.getModel()%> image"></td>
                     </tr>
 
                     <%

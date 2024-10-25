@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import model.Customer;
 import model.OrderVehicle;
 import model.RentalOrder;
+import model.Vehicle;
 
 /**
  *
@@ -45,9 +47,16 @@ public class Emp_ListOrder extends HttpServlet {
             DAO dao = new DAO();
             Map<Integer, RentalOrder> listOrders = dao.Emp_getListOrders();
             Map<Integer, Customer> listCustomers = dao.Emp_getListCustomers();
+            List<Integer> orderBy = dao.Emp_getOrderBy();
+            Map<Integer,List<Vehicle>> mapVehicles= new HashMap<>();
+            for(int id:listOrders.keySet()){
+                mapVehicles.put(id, dao.Emp_getVehicleInOrder(id));
+            }
+            
+            request.setAttribute("mapVehicles",mapVehicles);
+            request.setAttribute("orderBy",orderBy);
             request.setAttribute("lo", listOrders);
             request.setAttribute("lc", listCustomers);
-            request.setAttribute(LEGACY_DO_HEAD, dao);
             
             request.getRequestDispatcher("Emp_ListOrder.jsp").forward(request, response);
         }
