@@ -39,7 +39,7 @@
 
     </head>
     <body>
-        <jsp:include page="includes/header.jsp" />
+        <jsp:include page="Emp_header.jsp" />
         <%
             Map<Integer, RentalOrder> listOrders = (Map<Integer, RentalOrder>) request.getAttribute("lo");
             Map<Integer, Customer> listCustomers = (Map<Integer, Customer>) request.getAttribute("lc");
