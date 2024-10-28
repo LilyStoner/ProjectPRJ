@@ -6,9 +6,11 @@
             <file>file:/F:/GitHub/ProjectPRJ/src/java/dal/DAO.java</file>
             <file>file:/F:/GitHub/ProjectPRJ/web/Emp_OrderDetail.jsp</file>
             <file>file:/F:/GitHub/ProjectPRJ/src/java/Controller/Emp_OrderDetail.java</file>
+            <file>file:/F:/GitHub/ProjectPRJ/web/Emp_header.jsp</file>
             <file>file:/F:/GitHub/ProjectPRJ/src/java/Controller/Emp_ListOrder.java</file>
             <file>file:/F:/GitHub/ProjectPRJ/web/Emp_ListOrder.jsp</file>
             <file>file:/F:/GitHub/ProjectPRJ/web/contract_complete.jsp</file>
+            <file>file:/F:/GitHub/ProjectPRJ/web/includes/header.jsp</file>
         </group>
     </open-files>
 </project-private>

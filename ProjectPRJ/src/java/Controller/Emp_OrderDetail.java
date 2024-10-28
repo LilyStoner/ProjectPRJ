@@ -55,7 +55,7 @@ public class Emp_OrderDetail extends HttpServlet {
                 List<String> err = new ArrayList<>();
                 DAO dao = new DAO();
                 Map<Integer, RentalOrder> listOrders = dao.Emp_getListOrders();
-                
+
                 boolean check = false;
                 for (int id : listOrders.keySet()) {
                     if (id == order_id) {
@@ -75,6 +75,16 @@ public class Emp_OrderDetail extends HttpServlet {
                 if (ro.getDepositPaid() == 0 && !ro.getStatus().equalsIgnoreCase("completed") && !ro.getStatus().equalsIgnoreCase("cancelled")) {
                     err.add("Deposit fee not yet paid");
                 }
+                
+                if(ro.getStatus().equalsIgnoreCase("pending")||ro.getStatus().equalsIgnoreCase("comfirmed")){
+                    for(Vehicle v:lv){
+                        if ((v.getStatus().equalsIgnoreCase("maintenance"))) {
+                            err.add(v.getBrand() + " " + v.getModel()+" is under maintenance!");
+                            err_id.add(v.getVehicleId());
+                        }
+                    }
+                }    
+
 
                 for (Vehicle v : lv) {
                     int check_id = dao.Emp_checkConfirm(order_id, v.getVehicleId());
@@ -97,15 +107,14 @@ public class Emp_OrderDetail extends HttpServlet {
                             err_id.add(v.getVehicleId());
                             check_vehicle = true;
                         } else {
-                            long daysBetween=0;
+                            long daysBetween = 0;
                             if (ov.get(v.getVehicleId()).getReturnDate().compareTo(ro.getEndDate()) > 0) {
                                 daysBetween = ChronoUnit.DAYS.between(ro.getEndDate(), ov.get(v.getVehicleId()).getReturnDate());
                                 err.add(v.getBrand() + " " + v.getModel() + " has been lated for " + daysBetween + " days");
                             }
-                            
+
                         }
                     }
-                    
 
                 }
                 request.setAttribute("err_id", err_id);
@@ -123,11 +132,10 @@ public class Emp_OrderDetail extends HttpServlet {
                 request.setAttribute("c", c);
 
                 request.setAttribute("up", up);
-                
-                if(!check){
-                    
-                }else
-                if (up != null) {
+
+                if (!check) {
+
+                } else if (up != null) {
                     request.getRequestDispatcher("Emp_UpdateOrder").forward(request, response);
                 } else {
                     request.getRequestDispatcher("Emp_OrderDetail.jsp").forward(request, response);
