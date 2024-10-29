@@ -73,10 +73,10 @@ public class Emp_OrderDetail extends HttpServlet {
                 Map<Integer, OrderVehicle> ov = dao.Emp_getOrderVehicles(order_id);
 
                 if (ro.getDepositPaid() == 0 && !ro.getStatus().equalsIgnoreCase("completed") && !ro.getStatus().equalsIgnoreCase("cancelled")) {
-                    err.add("Deposit fee not yet paid");
+                    err.add("Deposit fee not yet paid!");
                 }
                 
-                if(ro.getStatus().equalsIgnoreCase("pending")||ro.getStatus().equalsIgnoreCase("comfirmed")){
+                if(ro.getStatus().equalsIgnoreCase("pending")||ro.getStatus().equalsIgnoreCase("confirmed")){
                     for(Vehicle v:lv){
                         if ((v.getStatus().equalsIgnoreCase("maintenance"))) {
                             err.add(v.getBrand() + " " + v.getModel()+" is under maintenance!");
