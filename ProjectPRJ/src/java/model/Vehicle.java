@@ -116,8 +116,37 @@ public class Vehicle {
         return image;
     }
 
+    public String getImg() {
+        return image;
+    }
     public void setImage(String image) {
         this.image = image;
+    }
+      public int getVehicle_id() {
+        return vehicleId;
+    }
+
+    public void setVehicle_id(int vehicle_id) {
+        this.vehicleId = vehicle_id;
+    }
+
+    public String getVehicle_type() {
+        return vehicleType;
+    }
+
+    public void setVehicle_type(String vehicle_type) {
+        this.vehicleType = vehicle_type;
+    }
+    
+    public String getRegistration_number() {
+        return registrationNumber;
+    }
+    
+    public int getManufacture_year() {
+        return manufactureYear;
+    }
+     public double getPrice_per_day() {
+        return pricePerDay;
     }
 
     // Optional: Override toString() for easy printing

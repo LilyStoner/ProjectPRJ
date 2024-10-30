@@ -65,8 +65,8 @@
                 else{
                     out.println("#66ccff");
                 }
-            %>"><%=status%></h2>
-                
+                %>"><%=status%></h2>
+
 
             <h2>CUSTOMER</h2>
             <table border="1">
@@ -143,7 +143,7 @@
                             %>
                             <%if (err_id.contains(v.getVehicleId())){
                             %>
-                            <p style="background-color: #ff9999;color:  white;text-align: center;font-weight: bold"  >Unavailable</p>
+                            <p style="background-color: #ff9999;color:  white;text-align: center;font-weight: bold"  ><%=v.getStatus()%></p>
                             <%
     }else{
                             %>
@@ -176,7 +176,7 @@
             <button  button onclick="confirmChoice('undeposited',<%=rentalOrder.getOrderId()%>)"style="width: 15vw;height: 50px;background-color: #33cc00;color:  white;text-align: center" type="submit" name="up" >DEPOSITED</button>
             <%
                 }else{
-%><p style="width: 15vw;background-color: #33cc00;color:  white;text-align: center;font-weight: bold" type="submit" name="up" >DEPOSITED</p><%
+            %><p style="width: 15vw;background-color: #33cc00;color:  white;text-align: center;font-weight: bold" type="submit" name="up" >DEPOSITED</p><%
 }
                 }
 
