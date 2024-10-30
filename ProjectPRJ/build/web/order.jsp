@@ -149,6 +149,7 @@
                                            String returnDate = request.getParameter("return_date");
                                            String pickupDate = request.getParameter("pickup_date");
                                            Vehicle v = (Vehicle) request.getAttribute("vehicle");
+                                           if(v!=null) {
             %>
              <script>
                     var total = <%=v.getPricePerDay()%>
@@ -160,6 +161,7 @@
                 }
                 };
                 </script>
+                <%}%>
         <!-- Header -->
         <jsp:include page="includes/header.jsp" />
 
