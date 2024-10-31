@@ -33,7 +33,7 @@
 
     </head>
     <body>
-        <jsp:include page="includes/header.jsp" />
+        <jsp:include page="Emp_header.jsp" />
         <%
 
             RentalOrder rentalOrder = (RentalOrder) request.getAttribute("ro");
