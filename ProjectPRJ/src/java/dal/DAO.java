@@ -390,6 +390,52 @@ public class DAO extends DBContext{
 
         return ro;
     }
+        public Customer getCustomerByID(int customerId) {
+        Customer customer = null;
+        String sql = "SELECT * FROM Customer WHERE customer_id = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Integer userId = rs.getObject("user_id") != null ? rs.getInt("user_id") : null;
+                String fullName = rs.getString("full_name");
+                String phoneNumber = rs.getString("phone_number");
+                String address = rs.getString("address");
+                String drivingLicenseNumber = rs.getString("driving_license_number");
+
+                // Lấy date_of_birth từ ResultSet và chuyển đổi thành java.sql.Date
+                Date dateOfBirth = rs.getDate("date_of_birth");
+                
+                // Tạo đối tượng Customer với dateOfBirth kiểu java.sql.Date
+                customer = new Customer(customerId, userId, fullName, phoneNumber, address, drivingLicenseNumber, dateOfBirth);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return customer;
+    }
+         public void updateCustomer(int customerId, String phoneNumber, String address, String drivingLicenseNumber) {
+        String sql = "UPDATE Customer SET phone_number = ?, address = ?, driving_license_number = ? WHERE customer_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            
+            stmt.setString(1, phoneNumber);
+            stmt.setString(2, address);
+            stmt.setString(3, drivingLicenseNumber);
+            stmt.setInt(4, customerId);
+            
+            int rowsAffected = stmt.executeUpdate();
+           
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+    }
     
     //check cac thu cac thu
      public boolean isARentalOrderOfCustomer(int CustomerID, int orderID){

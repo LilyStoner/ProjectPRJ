@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
+import model.Customer;
 import model.RentalOrder;
 
 /**
@@ -35,14 +36,23 @@ public class ContractComplete extends HttpServlet {
     throws ServletException, IOException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
-        int CustomerID = 1;
+  if(session.getAttribute("customer")==null) {
+                response.sendRedirect("login");
+                return;
+            }
+        int customerID = ((Customer)session.getAttribute("customer")).getUserId();
+        Customer c = dao.getCustomerByID(customerID);
+        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+            response.sendRedirect("profile");
+            return;
+        }
         String action = request.getParameter("action");
         RentalOrder ro = (RentalOrder) session.getAttribute("ro");
          LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
         LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
         String totalAmount =  request.getParameter("total_amount");
         totalAmount=totalAmount.substring(0, totalAmount.length()-2);
-        if(isValidContractInListContractOfCustomerID(dao, ro, CustomerID)) {
+        if(isValidContractInListContractOfCustomerID(dao, ro, customerID)) {
             if(action.equalsIgnoreCase("submit"))dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, null);
             if(action.equalsIgnoreCase("save"))dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Waiting", Boolean.FALSE, null);
         }   

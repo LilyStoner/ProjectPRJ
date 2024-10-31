@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Customer;
 import model.OrderVehicle;
 import model.RentalOrder;
 import model.Vehicle;
@@ -45,7 +46,16 @@ public class Contract extends HttpServlet {
             throws ServletException, IOException, SQLException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
-        int customerID = 1;
+        if(session.getAttribute("customer")==null) {
+                response.sendRedirect("login");
+                return;
+            }
+        int customerID = ((Customer)session.getAttribute("customer")).getUserId();
+        Customer c = dao.getCustomerByID(customerID);
+        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+            response.sendRedirect("profile");
+            return;
+        }
         String action = request.getParameter("action");
 
         String contractName = request.getParameter("contractName");

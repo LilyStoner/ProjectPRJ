@@ -12,13 +12,13 @@ import java.util.Date;
  */
 public class Customer {
 
-    private int customerId;
-    private Integer userId;
-    private String fullName;
-    private String phoneNumber;
-    private String address;
-    private String drivingLicenseNumber;
-    private Date dateOfBirth;
+     int customerId;
+     Integer userId;
+     String fullName;
+     String phoneNumber;
+     String address;
+     String drivingLicenseNumber;
+     Date dateOfBirth;
 
     // Constructor
     public Customer() {

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Customer;
 import model.RentalOrder;
 import model.Vehicle;
 
@@ -42,8 +43,17 @@ public class Order extends HttpServlet {
     throws ServletException, IOException, SQLException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
-        int customerID=1;
-        int vehicleID = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
+  if(session.getAttribute("customer")==null) {
+                response.sendRedirect("login");
+                return;
+            }
+        int customerID = ((Customer)session.getAttribute("customer")).getUserId();
+        Customer c = dao.getCustomerByID(customerID);
+        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+            response.sendRedirect("profile");
+            return;
+        }
+       int vehicleID = vehicleValid(request.getParameter("vehicleID"), dao.getAllVehicles());
         if (vehicleID==-1) {
             response.sendRedirect("home");
             return;

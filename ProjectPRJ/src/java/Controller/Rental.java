@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import model.Customer;
 import model.Vehicle;
 
 /**
@@ -35,6 +36,8 @@ public class Rental extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAO dao = new DAO();
+        HttpSession session = request.getSession();
+     
         List<Vehicle> listVehicle = dao.getAllVehicles();
         String vehicle = request.getParameter("vehicleId");
         int id = vehicleValid(vehicle, listVehicle);
@@ -43,7 +46,6 @@ public class Rental extends HttpServlet {
             response.sendRedirect("home");
             return;
         }
-        HttpSession session = request.getSession();
         request.setAttribute("listVehicle", listVehicle);
         request.setAttribute("vehicle", dao.getVehicleById(id));
         request.getRequestDispatcher("rental.jsp").forward(request, response);

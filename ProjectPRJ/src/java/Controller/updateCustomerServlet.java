@@ -14,16 +14,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDate;
 import model.Customer;
-import model.RentalOrder;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="OrderComplete", urlPatterns={"/OrderComplete"})
-public class OrderComplete extends HttpServlet {
+@WebServlet(name="updateCustomerServlet", urlPatterns={"/updateCustomer"})
+public class updateCustomerServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -34,44 +32,27 @@ public class OrderComplete extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        DAO dao = new DAO();
         HttpSession session = request.getSession();
-  if(session.getAttribute("customer")==null) {
-                response.sendRedirect("login");
-                return;
-            }
-        int customerID = ((Customer)session.getAttribute("customer")).getUserId();
-          Customer c = dao.getCustomerByID(customerID);
-        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+        DAO dao = new DAO();
+        Customer customer = (Customer) session.getAttribute("customer");
+
+        if (customer != null) {
+            String phoneNumber = request.getParameter("phoneNumber");
+            String address = request.getParameter("address");
+            String drivingLicenseNumber = request.getParameter("drivingLicenseNumber");
+
+            customer.setPhoneNumber(phoneNumber);
+            customer.setAddress(address);
+            customer.setDrivingLicenseNumber(drivingLicenseNumber);
+            dao.updateCustomer(customer.getCustomerId(), phoneNumber, address, drivingLicenseNumber);
+            session.setAttribute("customer", customer);
             response.sendRedirect("profile");
-            return;
+        } else {
+            response.sendRedirect("login"); 
         }
-        RentalOrder ro = (RentalOrder) session.getAttribute("lou");
-        int vehicleID=Integer.parseInt(request.getParameter("vehicleID"));
-        LocalDate pickupDate = LocalDate.parse(request.getParameter("pickup_date"));
-        LocalDate returnDate = LocalDate.parse(request.getParameter("return_date"));
-        String totalAmount =  request.getParameter("total_amount");
-        totalAmount=totalAmount.substring(0, totalAmount.length()-2);
-        if(isValidContractInListContractOfCustomerID(dao, ro, customerID))
-        dao.updateRentalOrder(ro.getOrderId(), pickupDate, returnDate, totalAmount, "Pending", Boolean.FALSE, vehicleID);
-        request.setAttribute("vehicleID", vehicleID);
-        request.setAttribute("pickup_date", pickupDate);
-        request.setAttribute("vehicle", dao.getVehicleById(vehicleID));
-        request.setAttribute("return_date", returnDate);
-        request.setAttribute("total_amount",totalAmount);
-        request.getRequestDispatcher("order_complete.jsp").forward(request, response);
+
     } 
-    
-     Boolean isValidContractInListContractOfCustomerID(DAO dao, RentalOrder ro , int CustomerID){
-        for (RentalOrder r : dao.getAllContractOfCustomerByStatus(CustomerID, "waiting")) {
-            if (r.getOrderId()==ro.getOrderId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-   
-   
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
      * Handles the HTTP <code>GET</code> method.

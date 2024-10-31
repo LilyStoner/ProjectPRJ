@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import model.Customer;
 import model.OrderVehicle;
 import model.RentalOrder;
 import model.Vehicle;
@@ -38,6 +39,17 @@ public class viewContracts extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         DAO dao = new DAO();
+        HttpSession session = request.getSession();
+          if(session.getAttribute("customer")==null) {
+                response.sendRedirect("login");
+                return;
+            }
+                  int customerID = ((Customer)session.getAttribute("customer")).getUserId();
+ Customer c = dao.getCustomerByID(customerID);
+        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+            response.sendRedirect("profile");
+            return;
+        }
         String status = request.getParameter("status");
         request.setAttribute("status", status);
         RentalOrder ro = (RentalOrder) request.getAttribute("ro");
@@ -59,7 +71,6 @@ public class viewContracts extends HttpServlet {
                          dao.deleteOrderVehicle(vehicleremomve, ro.getOrderId());
                 }
         }
-        HttpSession session = request.getSession();
         List<OrderVehicle> ov = dao.getAllOrderVehiclesByOrderId(ro.getOrderId());
         List<Vehicle> listVehicle = new ArrayList<>();
         for (OrderVehicle orderVehicle : ov) {
