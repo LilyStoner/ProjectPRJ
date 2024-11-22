@@ -46,13 +46,13 @@ public class Contract extends HttpServlet {
             throws ServletException, IOException, SQLException {
         DAO dao = new DAO();
         HttpSession session = request.getSession();
-        if(session.getAttribute("customer")==null) {
+        if(session.getAttribute("username")==null) {
                 response.sendRedirect("login");
                 return;
             }
         int customerID = ((Customer)session.getAttribute("customer")).getUserId();
-        Customer c = dao.getCustomerByID(customerID);
-        if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
+ Customer c = dao.getCustomerByID((String)session.getAttribute("username"));
+ if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
             response.sendRedirect("profile");
             return;
         }

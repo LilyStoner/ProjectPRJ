@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -18,13 +19,13 @@ public class Customer {
      String phoneNumber;
      String address;
      String drivingLicenseNumber;
-     Date dateOfBirth;
+     LocalDate dateOfBirth;
 
     // Constructor
     public Customer() {
     }
 
-    public Customer(int customerId, Integer userId, String fullName, String phoneNumber, String address, String drivingLicenseNumber, Date dateOfBirth) {
+    public Customer(int customerId, Integer userId, String fullName, String phoneNumber, String address, String drivingLicenseNumber, LocalDate dateOfBirth) {
         this.customerId = customerId;
         this.userId = userId;
         this.fullName = fullName;
@@ -83,11 +84,11 @@ public class Customer {
         this.drivingLicenseNumber = drivingLicenseNumber;
     }
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

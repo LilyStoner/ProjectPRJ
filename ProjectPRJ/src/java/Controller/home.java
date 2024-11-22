@@ -40,8 +40,9 @@ public class home extends HttpServlet {
         DAO dao = new DAO();
         List<Vehicle> listVehicle = dao.getAllVehicles();
         HttpSession session = request.getSession();
-       session.setAttribute("customer", dao.getCustomerByID(2));
-        
+       session.setAttribute("customer", dao.getCustomerByID((String)session.getAttribute("username")));
+           
+//them gi vao thi them
         
         List<String> allType = new ArrayList<>();
         String pick = request.getParameter("pickup_date");

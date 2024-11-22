@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.util.Date;
 import model.Customer;
 
 /**
@@ -35,16 +37,17 @@ public class updateCustomerServlet extends HttpServlet {
         HttpSession session = request.getSession();
         DAO dao = new DAO();
         Customer customer = (Customer) session.getAttribute("customer");
-
+        
         if (customer != null) {
             String phoneNumber = request.getParameter("phoneNumber");
             String address = request.getParameter("address");
             String drivingLicenseNumber = request.getParameter("drivingLicenseNumber");
-
+            LocalDate date = LocalDate.parse(request.getParameter("birth"));
             customer.setPhoneNumber(phoneNumber);
             customer.setAddress(address);
             customer.setDrivingLicenseNumber(drivingLicenseNumber);
-            dao.updateCustomer(customer.getCustomerId(), phoneNumber, address, drivingLicenseNumber);
+            customer.setDateOfBirth(date);
+            dao.updateCustomer(customer.getCustomerId(), phoneNumber, address, drivingLicenseNumber, date);
             session.setAttribute("customer", customer);
             response.sendRedirect("profile");
         } else {

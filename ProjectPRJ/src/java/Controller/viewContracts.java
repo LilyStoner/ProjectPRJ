@@ -45,7 +45,7 @@ public class viewContracts extends HttpServlet {
                 return;
             }
                   int customerID = ((Customer)session.getAttribute("customer")).getUserId();
- Customer c = dao.getCustomerByID(customerID);
+ Customer c = dao.getCustomerByID((String)session.getAttribute("username"));
         if(c.getDrivingLicenseNumber()==null||c.getDrivingLicenseNumber().isEmpty()||c.getDrivingLicenseNumber().isBlank()) {
             response.sendRedirect("profile");
             return;

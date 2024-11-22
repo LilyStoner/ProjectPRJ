@@ -389,17 +389,18 @@ public class DAO extends DBContext{
         }
 
         return ro;
-    }
-        public Customer getCustomerByID(int customerId) {
+}
+    public Customer getCustomerByID(String userName) {
         Customer customer = null;
-        String sql = "SELECT * FROM Customer WHERE customer_id = ?";
+        String sql = "select * from Customer c join [User] u on c.user_id=u.user_id where u.username=?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             
-            stmt.setInt(1, customerId);
+            stmt.setString(1, userName);
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
+                Integer customerId = rs.getInt("customer_id");
                 Integer userId = rs.getObject("user_id") != null ? rs.getInt("user_id") : null;
                 String fullName = rs.getString("full_name");
                 String phoneNumber = rs.getString("phone_number");
@@ -410,7 +411,7 @@ public class DAO extends DBContext{
                 Date dateOfBirth = rs.getDate("date_of_birth");
                 
                 // Tạo đối tượng Customer với dateOfBirth kiểu java.sql.Date
-                customer = new Customer(customerId, userId, fullName, phoneNumber, address, drivingLicenseNumber, dateOfBirth);
+                customer = new Customer(customerId, userId, fullName, phoneNumber, address, drivingLicenseNumber, LocalDate.parse(dateOfBirth+""));
             }
             
         } catch (SQLException e) {
@@ -419,23 +420,24 @@ public class DAO extends DBContext{
         
         return customer;
     }
-         public void updateCustomer(int customerId, String phoneNumber, String address, String drivingLicenseNumber) {
-        String sql = "UPDATE Customer SET phone_number = ?, address = ?, driving_license_number = ? WHERE customer_id = ?";
+     public void updateCustomer(int customerId, String phoneNumber, String address, String drivingLicenseNumber, LocalDate dateOfBirth) {
+    String sql = "UPDATE Customer SET phone_number = ?, address = ?, driving_license_number = ?, date_of_birth = ? WHERE customer_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            
-            stmt.setString(1, phoneNumber);
-            stmt.setString(2, address);
-            stmt.setString(3, drivingLicenseNumber);
-            stmt.setInt(4, customerId);
-            
-            int rowsAffected = stmt.executeUpdate();
-           
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
         
+        stmt.setString(1, phoneNumber);
+        stmt.setString(2, address);
+        stmt.setString(3, drivingLicenseNumber);
+        stmt.setDate(4, java.sql.Date.valueOf(dateOfBirth) ); // Thiết lập dateOfBirth
+        stmt.setInt(5, customerId);    // Thiết lập customerId
+        
+        int rowsAffected = stmt.executeUpdate();
+        System.out.println("Rows affected: " + rowsAffected); // Thông báo kết quả
+
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
     
     //check cac thu cac thu
      public boolean isARentalOrderOfCustomer(int CustomerID, int orderID){
@@ -519,7 +521,7 @@ public class DAO extends DBContext{
                 Customer c = new Customer();
                 c.setAddress(rs.getString("address"));
                 c.setCustomerId(rs.getInt("customer_id"));
-                c.setDateOfBirth(rs.getDate("date_of_birth"));
+                c.setDateOfBirth(rs.getDate("date_of_birth").toLocalDate());
                 c.setDrivingLicenseNumber(rs.getString("driving_license_number"));
                 c.setFullName(rs.getString("full_name"));
                 c.setPhoneNumber(rs.getString("phone_number"));
@@ -761,6 +763,6 @@ public class DAO extends DBContext{
     
     public static void main(String[] args) {
        DAO dao = new DAO();
-        System.out.println(dao.getAllRentalOrdersOfCustomer(1));
+        System.out.println(dao.getCustomerByID("john_doe"));
     }
 }
